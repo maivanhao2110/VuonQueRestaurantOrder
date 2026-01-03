@@ -1,0 +1,27 @@
+
+---
+
+# 📄 .gitignore (CHUẨN – KHÔNG LỖI)
+
+```gitignore
+# ===== Database runtime =====
+*.ibd
+*.frm
+*.log
+
+# ===== Environment =====
+.env
+
+# ===== PHP =====
+/vendor/
+
+# ===== Cache =====
+*.cache
+
+# ===== IDE =====
+.vscode/
+.idea/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
