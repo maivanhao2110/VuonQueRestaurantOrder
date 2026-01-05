@@ -1,0 +1,135 @@
+/**
+ * Cart Page CSS
+ */
+
+/* ==================== Cart Items ==================== */
+.cart-item {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: white;
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+}
+
+.cart-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-item-name {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: 4px;
+}
+
+.cart-item-price {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.cart-item-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-item-total {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary-600);
+}
+
+.remove-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-top: 4px;
+    align-self: flex-start;
+}
+
+/* ==================== Summary Card ==================== */
+.summary-card {
+    background-color: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    margin-top: var(--spacing-md);
+}
+
+.summary-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-md);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+}
+
+.summary-label {
+    color: var(--color-text-secondary);
+}
+
+.summary-value {
+    font-weight: var(--font-weight-semibold);
+}
+
+.summary-total {
+    padding-top: var(--spacing-md);
+}
+
+.summary-total .summary-label {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.summary-total .summary-value {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary-600);
+}
+
+.summary-divider {
+    height: 1px;
+    background-color: var(--color-border-light);
+    margin: var(--spacing-sm) 0;
+}
+
+/* ==================== Empty Cart ==================== */
+.empty-cart {
+    text-align: center;
+    padding: var(--spacing-3xl) var(--spacing-md);
+}
+
+.empty-cart-icon {
+    font-size: 64px;
+    margin-bottom: var(--spacing-md);
+}
+
+.empty-cart-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-cart-description {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+}

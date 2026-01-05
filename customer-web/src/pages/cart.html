@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Giỏ hàng - Vườn Quê Restaurant">
+    <meta name="theme-color" content="#22c55e">
+    <title>Giỏ hàng - Vườn Quê Restaurant</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/globals.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/cart.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="menu.html" class="btn-icon" aria-label="Quay lại">
+                    ←
+                </a>
+                <h1 class="header-title">Giỏ hàng</h1>
+                <div style="width: 40px;"></div> <!-- Spacer -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Cart Items -->
+            <div id="cartItems">
+                <!-- Cart items will be loaded here -->
+            </div>
+
+            <!-- Order Summary (shown when cart has items) -->
+            <div id="orderSummary" class="hidden">
+                <div class="summary-card">
+                    <h3 class="summary-title">Thông tin đơn hàng</h3>
+                    
+                    <!-- Order Note -->
+                    <div class="form-group">
+                        <label class="form-label" for="orderNote">Ghi chú (nếu có)</label>
+                        <textarea 
+                            id="orderNote" 
+                            class="input" 
+                            placeholder="Ví dụ: Không hành, ít cay..."
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="summary-row">
+                        <span class="summary-label">Tạm tính</span>
+                        <span class="summary-value" id="subtotalAmount">0₫</span>
+                    </div>
+                    
+                    <div class="summary-divider"></div>
+                    
+                    <div class="summary-row summary-total">
+                        <span class="summary-label">Tổng cộng</span>
+                        <span class="summary-value" id="totalAmount">0₫</span>
+                    </div>
+
+                    <!-- Checkout Button -->
+                    <button class="btn btn-primary btn-full btn-lg" onclick="handleCheckout()">
+                        Đặt món
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="menu.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Menu</span>
+        </a>
+        <a href="cart.html" class="nav-item active">
+            <span class="nav-icon">🛒</span>
+            <span>Giỏ hàng</span>
+            <span class="nav-badge" style="display: none;">0</span>
+        </a>
+        <a href="order-status.html" class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>Đơn hàng</span>
+        </a>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="../config/config.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../services/api.js"></script>
+    <script src="../assets/js/cart.js"></script>
+    <script src="../assets/js/order.js"></script>
+    <script src="../assets/js/cart-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+/**
+ * Order Status Page CSS
+ */
+
+/* ==================== Sections ==================== */
+.orders-section {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.section-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-md);
+    padding-left: 4px;
+}
+
+/* ==================== Order Card ==================== */
+.order-card {
+    background-color: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.order-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.order-info h3 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: 4px;
+}
+
+.order-time {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.order-items {
+    margin-bottom: var(--spacing-md);
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-xs) 0;
+    font-size: var(--font-size-sm);
+}
+
+.item-name {
+    color: var(--color-text-primary);
+}
+
+.item-quantity {
+    color: var(--color-text-secondary);
+    margin: 0 var(--spacing-sm);
+}
+
+.item-price {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary-600);
+}
+
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.order-total {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+}
+
+.total-label {
+    color: var(--color-text-secondary);
+    margin-right: var(--spacing-sm);
+}
+
+.total-amount {
+    color: var(--color-primary-600);
+    font-size: var(--font-size-lg);
+}
+
+/* ==================== Empty State ==================== */
+.orders-empty {
+    text-align: center;
+    padding: var(--spacing-3xl) var(--spacing-md);
+    color: var(--color-text-secondary);
+}
+
+.orders-empty-icon {
+    font-size: 48px;
+    margin-bottom: var(--spacing-md);
+}

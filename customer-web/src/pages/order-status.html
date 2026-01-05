@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Trạng thái đơn hàng - Vườn Quê Restaurant">
+    <meta name="theme-color" content="#22c55e">
+    <title>Đơn hàng - Vườn Quê Restaurant</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/globals.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/order.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="menu.html" class="btn-icon" aria-label="Quay lại">
+                    ←
+                </a>
+                <h1 class="header-title">Đơn hàng</h1>
+                <div style="width: 40px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Active Orders -->
+            <section class="orders-section">
+                <h2 class="section-title">Đơn hàng hiện tại</h2>
+                <div id="activeOrders">
+                    <!-- Active orders will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Order History -->
+            <section class="orders-section">
+                <h2 class="section-title">Lịch sử đơn hàng</h2>
+                <div id="orderHistory">
+                    <!-- Order history will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="menu.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Menu</span>
+        </a>
+        <a href="cart.html" class="nav-item">
+            <span class="nav-icon">🛒</span>
+            <span>Giỏ hàng</span>
+            <span class="nav-badge" style="display: none;">0</span>
+        </a>
+        <a href="order-status.html" class="nav-item active">
+            <span class="nav-icon">📋</span>
+            <span>Đơn hàng</span>
+        </a>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="../config/config.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../services/api.js"></script>
+    <script src="../assets/js/cart.js"></script>
+    <script src="../assets/js/order.js"></script>
+    <script src="../assets/js/order-status-page.js"></script>
+</body>
+</html>

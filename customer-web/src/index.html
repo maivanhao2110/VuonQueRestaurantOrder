@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Vườn Quê Restaurant - Order System">
+    <meta name="theme-color" content="#22c55e">
+    <title>Vườn Quê Restaurant</title>
+    
+    <script>
+        // Redirect to menu page with table number
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tableNumber = urlParams.get('ban');
+            
+            if (tableNumber) {
+                window.location.href = `pages/menu.html?ban=${tableNumber}`;
+            } else {
+                // No table number, show error
+                document.body.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; text-align: center;">
+                        <h1 style="font-size: 48px; margin-bottom: 16px;">🍽️</h1>
+                        <h2 style="margin-bottom: 8px;">Vườn Quê Restaurant</h2>
+                        <p style="color: #6b7280;">Vui lòng quét mã QR trên bàn để bắt đầu đặt món</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</head>
+<body>
+    <div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+        <p>Đang chuyển hướng...</p>
+    </div>
+</body>
+</html>
