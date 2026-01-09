@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Danh mục - Vườn Quê Admin</title>
+    <link rel="stylesheet" href="../assets/css/MenuManage.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="brand">
+                    <span>🍽️</span> Vườn Quê Admin
+                </a>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="../index.html">
+                        <span class="icon">🏠</span> Tổng quan
+                    </a>
+                </li>
+                <li>
+                    <a href="menu-manage.html">
+                        <span class="icon">📋</span> Quản lý Menu
+                    </a>
+                </li>
+                <li>
+                    <a href="category-manage.html" class="active">
+                        <span class="icon">📂</span> Quản lý Danh mục
+                    </a>
+                </li>
+                <li>
+                    <a href="staff-manage.html">
+                        <span class="icon">👥</span> Quản lý Nhân viên
+                    </a>
+                </li>
+                <li>
+                    <a href="invoice.html">
+                        <span class="icon">🧾</span> Hóa đơn & Thanh toán
+                    </a>
+                </li>
+                <li>
+                    <a href="statistic.html">
+                        <span class="icon">📊</span> Báo cáo Thống kê
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                &copy; 2026 Vườn Quê Restaurant
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1 class="page-title">Quản lý Danh mục</h1>
+                <div class="user-profile">
+                    <span class="user-name">Quản trị viên</span>
+                    <div class="avatar">A</div>
+                </div>
+            </header>
+
+            <div class="content-scrollable">
+                <div class="data-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h2 style="margin: 0;">Danh sách Danh mục</h2>
+                        <button class="btn btn-primary" onclick="showAddForm()">+ Thêm Danh mục</button>
+                    </div>
+
+                    <table id="category-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên danh mục</th>
+                                <th>Mô tả</th>
+                                <th>Thứ tự</th>
+                                <th style="text-align: right;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+
+                    <!-- Add/Edit Form -->
+                    <div id="category-form" style="display:none; margin-top: 30px; border-top: 1px solid var(--color-neutral-200); padding-top: 30px;">
+                        <h3 id="form-title">Thêm Danh mục mới</h3>
+                        <input type="hidden" id="category-id">
+                        <div class="form-group">
+                            <label>Tên danh mục</label>
+                            <input type="text" id="category-name" placeholder="VD: Khai vị, Món chính...">
+                        </div>
+                        <div class="form-group">
+                            <label>Mô tả</label>
+                            <input type="text" id="category-description" placeholder="Mô tả ngắn gọn về danh mục">
+                        </div>
+                        <div class="form-group">
+                            <label>Thứ tự hiển thị</label>
+                            <input type="number" id="category-sort" value="0">
+                        </div>
+                        <div style="display: flex; gap: 12px; margin-top: 20px;">
+                            <button class="btn btn-primary" onclick="saveCategory()">Lưu lại</button>
+                            <button class="btn" style="background: var(--color-neutral-200);" onclick="hideForm()">Hủy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+        <script src="../services/admin-api.js"></script>
+    <script>
+        function fetchCategories() {
+            adminApi.getCategories().then(data => {
+                const tbody = document.querySelector('#category-table tbody');
+                tbody.innerHTML = '';
+                
+                data.forEach(cat => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${cat.id}</td>
+                        <td><strong>${cat.name}</strong></td>
+                        <td>${cat.description || ''}</td>
+                        <td>${cat.is_active ? '<span class="status-active">Hoạt động</span>' : 'Ẩn'}</td>
+                        <td class="actions">
+                            <button class="btn btn-secondary" onclick="editCategory(${cat.id}, '${cat.name}', '${cat.description || ''}', ${cat.is_active})">Sửa</button>
+                            <button class="btn btn-danger" onclick="deleteCategory(${cat.id})">Xóa</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function showAddForm() {
+            document.getElementById('category-form').style.display = 'block';
+            document.getElementById('form-title').innerText = 'Thêm Danh mục mới';
+            document.getElementById('category-id').value = '';
+            document.getElementById('category-name').value = '';
+            document.getElementById('category-description').value = '';
+            document.getElementById('category-name').focus();
+        }
+
+        function hideForm() {
+            document.getElementById('category-form').style.display = 'none';
+        }
+
+        function editCategory(id, name, desc, isActive) {
+            document.getElementById('category-form').style.display = 'block';
+            document.getElementById('form-title').innerText = 'Chỉnh sửa Danh mục #' + id;
+            document.getElementById('category-id').value = id;
+            document.getElementById('category-name').value = name;
+            document.getElementById('category-description').value = desc;
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function saveCategory() {
+            const id = document.getElementById('category-id').value;
+            const data = {
+                name: document.getElementById('category-name').value,
+                description: document.getElementById('category-description').value
+            };
+
+            if (!data.name) return alert('Vui lòng nhập tên danh mục');
+
+            if (id) {
+                adminApi.updateCategory(id, data).then(res => {
+                    hideForm();
+                    fetchCategories();
+                });
+            } else {
+                adminApi.createCategory(data).then(res => {
+                    hideForm();
+                    fetchCategories();
+                });
+            }
+        }
+
+        function deleteCategory(id) {
+            if (!confirm('Bạn có chắc muốn xóa danh mục này?')) return;
+            adminApi.deleteCategory(id).then(fetchCategories);
+        }
+
+        // Initial load
+        fetchCategories();
+    </script>
+</body>
+</html>

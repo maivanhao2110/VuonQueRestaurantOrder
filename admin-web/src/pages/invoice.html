@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hóa đơn & Thanh toán - Admin</title>
+    <link rel="stylesheet" href="../assets/css/MenuManage.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="brand"><span>🍽️</span> Vườn Quê Admin</a>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="../index.html"><span class="icon">🏠</span> Tổng quan</a></li>
+                <li><a href="menu-manage.html"><span class="icon">📋</span> Quản lý Menu</a></li>
+                <li><a href="category-manage.html"><span class="icon">📂</span> Quản lý Danh mục</a></li>
+                <li><a href="staff-manage.html"><span class="icon">👥</span> Quản lý Nhân viên</a></li>
+                <li><a href="invoice.html" class="active"><span class="icon">🧾</span> Hóa đơn & Thanh toán</a></li>
+                <li><a href="statistic.html"><span class="icon">📊</span> Báo cáo Thống kê</a></li>
+            </ul>
+            <div class="sidebar-footer">&copy; 2026 Vườn Quê Restaurant</div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <h1 class="page-title">Hóa đơn & Thanh toán</h1>
+                <div class="user-profile"><span class="user-name">Quản trị viên</span><div class="avatar">A</div></div>
+            </header>
+
+            <div class="content-scrollable">
+                <div class="data-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h2 style="margin: 0;">Danh sách hóa đơn</h2>
+                        <button class="btn btn-primary" onclick="fetchInvoices()">🔄 Làm mới</button>
+                    </div>
+
+                    <table id="invoice-table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Bàn</th>
+                            <th>Tổng tiền</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th style="text-align: right;">Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div id="invoice-detail" style="display:none; margin-top: 32px; padding: 24px; background: var(--color-bg-secondary); border-radius: 12px; border: 1px solid var(--color-neutral-200);"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+<script src="../services/admin-api.js"></script>
+<script>
+function fetchInvoices() {
+    adminApi.getInvoices().then(data => {
+        const tbody = document.querySelector('#invoice-table tbody');
+        tbody.innerHTML = '';
+        data.forEach(inv => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${inv.id}</td>
+                <td>${inv.table_number||''}</td>
+                <td>${new Intl.NumberFormat('vi-VN').format(inv.total_amount)} ₫</td>
+                <td>${inv.created_at}</td>
+                <td><span class="status-active">${inv.status}</span></td>
+                <td style="text-align: right;">
+                    <button class="btn btn-secondary" onclick="viewInvoice(${inv.id})">Chi tiết</button>
+                </td>`;
+            tbody.appendChild(tr);
+        });
+    });
+}
+function viewInvoice(id) {
+    adminApi.getInvoiceDetail(id).then(inv => {
+        let html = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Chi tiết hóa đơn #${inv.id}</h2>
+                <button class="btn" onclick="document.getElementById('invoice-detail').style.display='none'">Đóng</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                <div>
+                    <p><strong>Bàn:</strong> ${inv.table_number||'N/A'}</p>
+                    <p><strong>Ngày tạo:</strong> ${inv.created_at}</p>
+                </div>
+                <div>
+                    <p><strong>Trạng thái:</strong> ${inv.status}</p>
+                    <p><strong>Tổng tiền:</strong> <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-600);">${new Intl.NumberFormat('vi-VN').format(inv.total_amount)} ₫</span></p>
+                </div>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Món ăn</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th style="text-align: right;">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${inv.items.map(i => `
+                        <tr>
+                            <td>${i.menu_item_name}</td>
+                            <td>${i.quantity}</td>
+                            <td>${new Intl.NumberFormat('vi-VN').format(i.price)} ₫</td>
+                            <td style="text-align: right;">${new Intl.NumberFormat('vi-VN').format(i.price * i.quantity)} ₫</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        const detailDiv = document.getElementById('invoice-detail');
+        detailDiv.innerHTML = html;
+        detailDiv.style.display = 'block';
+        detailDiv.scrollIntoView({ behavior: 'smooth' });
+    });
+}
+fetchInvoices();
+</script>
+</body>
+</html>

@@ -26,16 +26,16 @@ $path = parse_url($requestUri, PHP_URL_PATH);
 if (strpos($path, '/api/customer') !== false) {
     require_once __DIR__ . '/../routes/customer.php';
 } elseif (strpos($path, '/api/staff') !== false) {
-    Response::error('Staff API not implemented yet');
+    require_once __DIR__ . '/../routes/staff.php';
 } elseif (strpos($path, '/api/admin') !== false) {
-    Response::error('Admin API not implemented yet');
+    require_once __DIR__ . '/../routes/admin.php';
 } elseif (strpos($path, '/api') !== false) {
     Response::success('VuonQueRestaurant API', [
         'version' => '1.0.0',
         'endpoints' => [
             'customer' => '/api/customer',
-            'staff' => '/api/staff (not implemented)',
-            'admin' => '/api/admin (not implemented)'
+            'staff' => '/api/staff',
+            'admin' => '/api/admin'
         ]
     ]);
 } else {

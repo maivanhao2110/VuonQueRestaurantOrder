@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Vườn Quê Admin</title>
+    <link rel="stylesheet" href="assets/css/MenuManage.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="brand">
+                    <span>🍽️</span> Vườn Quê Admin
+                </a>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="index.html" class="active">
+                        <span class="icon">🏠</span> Tổng quan
+                    </a>
+                </li>
+                <li>
+                    <a href="pages/menu-manage.html">
+                        <span class="icon">📋</span> Quản lý Menu
+                    </a>
+                </li>
+                <li>
+                    <a href="pages/category-manage.html">
+                        <span class="icon">📂</span> Quản lý Danh mục
+                    </a>
+                </li>
+                <li>
+                    <a href="pages/staff-manage.html">
+                        <span class="icon">👥</span> Quản lý Nhân viên
+                    </a>
+                </li>
+                <li>
+                    <a href="pages/invoice.html">
+                        <span class="icon">🧾</span> Hóa đơn & Thanh toán
+                    </a>
+                </li>
+                <li>
+                    <a href="pages/statistic.html">
+                        <span class="icon">📊</span> Báo cáo Thống kê
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                &copy; 2026 Vườn Quê Restaurant
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1 class="page-title">Bảng điều khiển</h1>
+                <div class="user-profile">
+                    <span class="user-name">Quản trị viên</span>
+                    <div class="avatar">A</div>
+                </div>
+            </header>
+
+            <div class="content-scrollable">
+                <div class="welcome-banner">
+                    <h2>Chào mừng trở lại! 👋</h2>
+                    <p>Hệ thống hiện tại đang hoạt động ổn định. Bạn có thể theo dõi và quản lý nhà hàng tại đây.</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-icon">📋</div>
+                        <h3>Quản lý Menu</h3>
+                        <p>Tùy chỉnh danh sách món ăn, giá cả và trạng thái còn món.</p>
+                        <a href="pages/menu-manage.html" class="card-action">Quản lý ngay &rarr;</a>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">👥</div>
+                        <h3>Nhân viên</h3>
+                        <p>Xử lý thông tin nhân sự, phân quyền truy cập hệ thống.</p>
+                        <a href="pages/staff-manage.html" class="card-action">Chi tiết &rarr;</a>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">🧾</div>
+                        <h3>Giao dịch</h3>
+                        <p>Tổng hợp các hóa đơn và lịch sử thanh toán từ khách hàng.</p>
+                        <a href="pages/invoice.html" class="card-action">Xem hóa đơn &rarr;</a>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">📊</div>
+                        <h3>Thống kê</h3>
+                        <p>Báo cáo doanh thu và phân tích hiệu quả kinh doanh.</p>
+                        <a href="pages/statistic.html" class="card-action">Xem báo cáo &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="services/admin-api.js"></script>
+    <script>
+        function loadDashboardStats() {
+            adminApi.getStatistics().then(stats => {
+                if (!stats) return;
+                
+                // Update cards with real data if elements existed, but since we use cards with descriptions, 
+                // let's just add a quick summary bar or update the text.
+                // For now, let's just make sure the API is called to verify connection.
+                console.log('Dashboard stats loaded:', stats);
+            }).catch(err => {
+                console.error('Lỗi khi tải thống kê:', err);
+            });
+        }
+        
+        loadDashboardStats();
+    </script>
+</body>
+</html>
