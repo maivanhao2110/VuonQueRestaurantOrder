@@ -36,8 +36,9 @@ class Order {
      * Get orders by table number
      */
     public function getByTable($tableNumber, $status = null) {
+        // Only show orders that haven't been completed/paid (end_at IS NULL)
         $query = "SELECT * FROM " . $this->table_name . " 
-                  WHERE table_number = :table_number";
+                  WHERE table_number = :table_number AND end_at IS NULL";
         
         if ($status) {
             $query .= " AND status = :status";
