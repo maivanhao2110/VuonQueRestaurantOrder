@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff - Vườn Quê Restaurant</title>
+    <link rel="stylesheet" href="assets/css/staff.css">
+</head>
+
+<script>
+    // Check login status
+    if (!sessionStorage.getItem('staff_user')) {
+        window.location.href = 'login.html';
+    }
+</script>
+
+<body>
+    <div class="staff-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="brand">
+                    <span>🍽️</span> Vườn Quê Staff
+                </a>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="index.html" class="active">
+                        <span class="icon">📋</span> Đơn hàng
+                    </a>
+                </li>
+                <li>
+                    <a href="pages/menu-manage.html">
+                        <span class="icon">🍜</span> Quản lý Menu
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                &copy; 2026 Vườn Quê Restaurant
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1 class="page-title">Quản lý đơn hàng</h1>
+                <div class="header-actions">
+                    <span id="staffName" style="margin-right: 12px; color: #525252;"></span>
+                    <button class="btn btn-secondary" onclick="refreshOrders()">🔄 Làm mới</button>
+                    <button class="btn btn-secondary" onclick="logout()" style="margin-left: 8px;">🚪 Đăng xuất</button>
+                </div>
+            </header>
+
+            <div class="content-scrollable">
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-status="" onclick="filterOrders('')">Tất cả</button>
+                    <button class="filter-tab" data-status="CREATED" onclick="filterOrders('CREATED')">Chờ xác
+                        nhận</button>
+                    <button class="filter-tab" data-status="CONFIRMED" onclick="filterOrders('CONFIRMED')">Đã xác
+                        nhận</button>
+                    <button class="filter-tab" data-status="COOKING" onclick="filterOrders('COOKING')">Đang nấu</button>
+                    <button class="filter-tab" data-status="DONE" onclick="filterOrders('DONE')">Hoàn thành</button>
+                </div>
+
+                <!-- Orders Grid -->
+                <div class="orders-grid" id="ordersGrid">
+                    <!-- Orders will be loaded here -->
+                    <div class="loading-container">
+                        <div class="loading"></div>
+                        <p>Đang tải đơn hàng...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderDetailModal" class="modal-backdrop" style="display: none;">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalOrderTitle">Chi tiết đơn hàng</h3>
+                <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalOrderBody">
+                <!-- Order details will be loaded here -->
+            </div>
+            <div class="modal-footer" id="modalOrderFooter">
+                <!-- Action buttons will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="services/staff-api.js"></script>
+    <script src="assets/js/orders.js"></script>
+    <script>
+        // Display staff name
+        const staffUser = JSON.parse(sessionStorage.getItem('staff_user') || '{}');
+        if (staffUser.full_name) {
+            document.getElementById('staffName').textContent = 'Xin chào, ' + staffUser.full_name;
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('staff_user');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+
+</html>

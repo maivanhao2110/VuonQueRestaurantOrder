@@ -191,6 +191,15 @@ CREATE TABLE `staff` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Dumping data for table `staff`
+-- Password for all accounts: 123456
+--
+
+INSERT INTO `staff` (`id`, `full_name`, `username`, `password_hash`, `position`, `is_active`, `phone`, `email`) VALUES
+(1, 'Nguyễn Văn A', 'nhanvien1', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.w7gYTTgI4qA1MrLN3G', 'STAFF', 1, '0901234567', 'nhanvien1@vuonque.com'),
+(2, 'Trần Thị B', 'quanly1', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.w7gYTTgI4qA1MrLN3G', 'MANAGE', 1, '0907654321', 'quanly1@vuonque.com');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -303,7 +312,7 @@ ALTER TABLE `payment`
 -- AUTO_INCREMENT for table `staff`
 --
 ALTER TABLE `staff`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
