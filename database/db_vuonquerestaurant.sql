@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 10, 2026 at 05:44 AM
+-- Generation Time: Jan 10, 2026 at 08:02 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -55,6 +55,7 @@ CREATE TABLE `invoice` (
   `id` int(11) NOT NULL,
   `order_id` int(11) DEFAULT NULL,
   `total_amount` decimal(12,2) DEFAULT NULL,
+  `type_payment` enum('CAST','BANK') NOT NULL,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -112,7 +113,9 @@ CREATE TABLE `orders` (
 
 INSERT INTO `orders` (`id`, `customer_name`, `table_number`, `staff_id`, `status`, `note`, `created_at`, `end_at`) VALUES
 (24, 'Khách', 1, NULL, 'PAID', '', '2026-01-10 11:34:49', '2026-01-10 11:35:51'),
-(25, 'Khách', 1, NULL, 'CREATED', '', '2026-01-10 11:36:18', NULL);
+(25, 'Khách', 1, NULL, 'PAID', '', '2026-01-10 11:36:18', '2026-01-10 13:54:42'),
+(26, 'Khách', 3, NULL, 'PAID', '', '2026-01-10 13:54:21', '2026-01-10 13:56:06'),
+(27, 'Khách', 3, NULL, 'PAID', '', '2026-01-10 13:58:25', '2026-01-10 13:58:42');
 
 -- --------------------------------------------------------
 
@@ -138,8 +141,12 @@ INSERT INTO `order_item` (`id`, `order_id`, `menu_item_id`, `quantity`, `price`,
 (39, 24, 7, 1, 15000.00, 'WAITING', '2026-01-10 11:34:49'),
 (40, 24, 4, 1, 35000.00, 'WAITING', '2026-01-10 11:34:49'),
 (41, 24, 3, 1, 50000.00, 'WAITING', '2026-01-10 11:34:49'),
-(42, 25, 6, 1, 5000.00, 'WAITING', '2026-01-10 11:36:18'),
-(43, 25, 1, 1, 48000.00, 'WAITING', '2026-01-10 11:36:18');
+(42, 25, 6, 1, 5000.00, 'DONE', '2026-01-10 11:36:18'),
+(43, 25, 1, 1, 48000.00, 'DONE', '2026-01-10 11:36:18'),
+(44, 26, 8, 1, 20000.00, 'DONE', '2026-01-10 13:54:21'),
+(45, 26, 4, 1, 35000.00, 'DONE', '2026-01-10 13:54:21'),
+(46, 27, 8, 1, 20000.00, 'DONE', '2026-01-10 13:58:25'),
+(47, 27, 4, 1, 35000.00, 'DONE', '2026-01-10 13:58:25');
 
 -- --------------------------------------------------------
 
@@ -192,12 +199,11 @@ CREATE TABLE `staff` (
 
 --
 -- Dumping data for table `staff`
--- Password for all accounts: 123456
 --
 
-INSERT INTO `staff` (`id`, `full_name`, `username`, `password_hash`, `position`, `is_active`, `phone`, `email`) VALUES
-(1, 'Nguyễn Văn A', 'nhanvien1', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.w7gYTTgI4qA1MrLN3G', 'STAFF', 1, '0901234567', 'nhanvien1@vuonque.com'),
-(2, 'Trần Thị B', 'quanly1', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.w7gYTTgI4qA1MrLN3G', 'MANAGE', 1, '0907654321', 'quanly1@vuonque.com');
+INSERT INTO `staff` (`id`, `full_name`, `username`, `password_hash`, `position`, `is_active`, `created_at`, `cccd`, `phone`, `email`, `address`) VALUES
+(1, 'Nguyễn Văn A', 'nhanvien1', '$2y$10$atQOhiM6eA3OVG87uBb75eZaUAdwE06k5jI1ehXrooolT7r7wy4Pa', 'STAFF', 1, '2026-01-10 06:47:57', NULL, '0901234567', 'nhanvien1@vuonque.com', ''),
+(2, 'Trần Thị B', 'quanly1', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.w7gYTTgI4qA1MrLN3G', 'MANAGE', 1, '2026-01-10 06:47:57', NULL, '0907654321', 'quanly1@vuonque.com', NULL);
 
 --
 -- Indexes for dumped tables
@@ -288,13 +294,13 @@ ALTER TABLE `menu_item`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `order_item`
 --
 ALTER TABLE `order_item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `order_status_log`
