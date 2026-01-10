@@ -28,9 +28,9 @@
     --color-danger-bg: #fee2e2;
     --color-info: #3b82f6;
     --color-info-bg: #dbeafe;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 16px;
@@ -69,7 +69,7 @@ body {
 
 .sidebar-header {
     padding: 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-header .brand {
@@ -93,14 +93,14 @@ body {
     align-items: center;
     gap: 12px;
     padding: 14px 20px;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
     transition: all 0.2s;
 }
 
 .sidebar-menu li a:hover,
 .sidebar-menu li a.active {
-    background: rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.15);
     color: white;
 }
 
@@ -111,8 +111,8 @@ body {
 .sidebar-footer {
     padding: 16px 20px;
     font-size: 0.75rem;
-    color: rgba(255,255,255,0.5);
-    border-top: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .main-content {
@@ -310,7 +310,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -417,6 +417,10 @@ body {
 .item-name {
     font-weight: 500;
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Space between name and X button */
 }
 
 .item-qty {
@@ -576,7 +580,9 @@ body {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* ==================== Data Table (for menu) ==================== */
@@ -589,7 +595,8 @@ table {
     box-shadow: var(--shadow-sm);
 }
 
-th, td {
+th,
+td {
     padding: 14px 16px;
     text-align: left;
 }
@@ -648,26 +655,291 @@ tr:hover td {
 }
 
 /* ==================== Responsive ==================== */
+/* ==================== Quantity Controls & Action Buttons ==================== */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-neutral-100);
+    padding: 4px;
+    border-radius: 20px;
+}
+
+.btn-qty {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: white;
+    color: var(--color-neutral-700);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-qty:hover {
+    background: var(--color-primary-500);
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-qty:active {
+    transform: scale(0.95);
+}
+
+.quantity-control span {
+    min-width: 24px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.btn-delete {
+    padding: 4px 12px;
+    height: auto;
+    width: auto;
+    border: none;
+    border-radius: 12px;
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+    margin-left: 8px;
+    opacity: 1;
+}
+
+.btn-delete:hover {
+    background: var(--color-danger);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    opacity: 1;
+}
+
+.btn-delete:active {
+    transform: scale(0.95);
+}
+
+/* Add Item Button Styling in Modal */
+.add-item-container .btn-outline-primary {
+    background: transparent;
+    border: 2px dashed var(--color-primary-300);
+    color: var(--color-primary-600);
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.add-item-container .btn-outline-primary:hover {
+    border-color: var(--color-primary-500);
+    background: var(--color-primary-50);
+    color: var(--color-primary-700);
+}
+
+.menu-item-card {
+    transition: transform 0.2s, box-shadow 0.2s !important;
+}
+
+.menu-item-card:hover {
+    background: var(--color-neutral-50) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md) !important;
+}
+
+.menu-item-card .btn-primary {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 6px rgba(34, 197, 94, 0.2);
+}
+
+.menu-item-card .btn-primary:hover {
+    transform: scale(1.1);
+}
+
+/* Category Tabs Scrollbar */
+.category-tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.category-tabs::-webkit-scrollbar-thumb {
+    background: var(--color-neutral-300);
+    border-radius: 4px;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         display: none;
     }
-    
+
     .main-content {
         margin-left: 0;
     }
-    
+
+    .top-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+
+    .page-title {
+        font-size: 1.25rem;
+    }
+
+    .header-actions {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .staff-greeting {
+        display: none;
+        /* Hide greeting on mobile to save space */
+    }
+
+    .btn-header span {
+        display: none;
+        /* Hide button text on mobile */
+    }
+
+    .btn-header {
+        padding: 8px;
+        /* Square-ish buttons */
+    }
+
     .orders-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 0 16px;
+        /* Add side padding */
     }
-    
+
+    .content-scrollable {
+        padding: 16px 0;
+        /* Remove side padding from container, rely on grid/children */
+    }
+
     .filter-tabs {
         overflow-x: auto;
         flex-wrap: nowrap;
         padding-bottom: 8px;
+        margin: 0 16px 16px 16px;
+        /* Align with content */
     }
-    
-    .filter-tab {
-        white-space: nowrap;
+
+    /* Modify modal for mobile */
+    .modal {
+        width: 95%;
+        max-height: 85vh;
     }
+}
+
+/* ==================== Header Actions & Premium Buttons ==================== */
+.staff-greeting {
+    margin-right: 16px;
+    font-weight: 600;
+    color: var(--color-neutral-600);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--color-neutral-50);
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.staff-greeting::before {
+    content: "👤";
+    font-size: 1rem;
+}
+
+.btn-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+}
+
+.btn-refresh {
+    background: white;
+    color: var(--color-primary-600);
+    border-color: var(--color-neutral-200);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-refresh:hover {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+    color: var(--color-primary-700);
+    transform: translateY(-1px);
+}
+
+.btn-refresh svg {
+    transition: transform 0.5s ease;
+}
+
+.btn-refresh:hover svg {
+    transform: rotate(180deg);
+}
+
+.btn-logout {
+    background: var(--color-neutral-50);
+    color: var(--color-neutral-600);
+    margin-left: 8px;
+}
+
+.btn-logout:hover {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-danger-outline {
+    background: transparent;
+    border: 1px solid var(--color-danger);
+    color: var(--color-danger);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-danger-outline:hover {
+    background: var(--color-danger-bg);
+}
+
+.btn-logout svg {
+    transition: transform 0.2s;
+}
+
+.btn-logout:hover svg {
+    transform: translateX(2px);
 }

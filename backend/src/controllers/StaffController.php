@@ -9,6 +9,7 @@ require_once __DIR__ . '/../models/Order.php';
 require_once __DIR__ . '/../models/OrderItem.php';
 require_once __DIR__ . '/../models/MenuItem.php';
 require_once __DIR__ . '/../models/Category.php';
+require_once __DIR__ . '/../models/Invoice.php';
 require_once __DIR__ . '/../utils/Response.php';
 
 class StaffController
@@ -18,6 +19,7 @@ class StaffController
     private $orderItemModel;
     private $menuItemModel;
     private $categoryModel;
+    private $invoiceModel;
 
     public function __construct($db)
     {
@@ -26,6 +28,7 @@ class StaffController
         $this->orderItemModel = new OrderItem($db);
         $this->menuItemModel = new MenuItem($db);
         $this->categoryModel = new Category($db);
+        $this->invoiceModel = new Invoice($db);
     }
 
     private function getJsonBody()
@@ -167,11 +170,18 @@ class StaffController
     }
 
     /**
-     * Pay order (set status = PAID, end_at = NOW)
+     * Pay order (set status = PAID, end_at = NOW) and create Invoice
      */
     public function payOrder($id)
     {
         try {
+            $data = $this->getJsonBody();
+            $typePayment = $data['type_payment'] ?? null; // CAST or BANK
+
+            if (!$typePayment || !in_array($typePayment, ['CAST', 'BANK'])) {
+                Response::error('Vui lòng chọn loại thanh toán (Tiền mặt/Chuyển khoản)');
+            }
+
             $order = $this->orderModel->getById($id);
 
             if (!$order) {
@@ -184,12 +194,67 @@ class StaffController
                 Response::error('Chưa thể thanh toán - còn món chưa hoàn thành');
             }
 
+            // Calculate total
+            $totalAmount = $this->calculateOrderTotal($items);
+
+            $this->db->beginTransaction();
+
+            // 1. Update Order Status
             $success = $this->orderModel->payOrder($id);
 
+            if (!$success) {
+                $this->db->rollBack();
+                Response::error('Không thể cập nhật trạng thái đơn hàng');
+            }
+
+            // 2. Create Invoice
+            $invoiceId = $this->invoiceModel->create($id, $totalAmount, $typePayment);
+
+            if (!$invoiceId) {
+                $this->db->rollBack();
+                Response::error('Không thể tạo hóa đơn');
+            }
+
+            $this->db->commit();
+            Response::success('Thanh toán thành công. Hóa đơn #' . $invoiceId);
+
+        } catch (Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            Response::error($e->getMessage());
+        }
+    }
+
+    /**
+     * Cancel order (set status = CANCELLED)
+     * Requirement: No items are COOKING or DONE
+     */
+    public function cancelOrder($id)
+    {
+        try {
+            $order = $this->orderModel->getById($id);
+            if (!$order)
+                Response::error('Không tìm thấy đơn hàng');
+
+            if ($order['status'] == 'PAID' || $order['status'] == 'CANCELLED') {
+                Response::error('Đơn hàng đã kết thúc, không thể hủy');
+            }
+
+            // Check items status
+            $items = $this->orderItemModel->getByOrderId($id);
+            foreach ($items as $item) {
+                if ($item['status'] == 'COOKING' || $item['status'] == 'DONE') {
+                    Response::error('Không thể hủy bàn vì có món đang nấu hoặc đã xong');
+                }
+            }
+
+            $success = $this->orderModel->cancel($id);
+
             if ($success) {
-                Response::success('Thanh toán thành công');
+                Response::success('Đã hủy bàn thành công');
             } else {
-                Response::error('Không thể thanh toán đơn hàng');
+                Response::error('Không thể hủy bàn');
             }
         } catch (Exception $e) {
             Response::error($e->getMessage());
@@ -217,6 +282,104 @@ class StaffController
                 Response::success('Cập nhật trạng thái món thành công');
             } else {
                 Response::error('Không thể cập nhật trạng thái món');
+            }
+        } catch (Exception $e) {
+            Response::error($e->getMessage());
+        }
+    }
+
+    // ==================== Order Modification ====================
+
+    public function addOrderItem($orderId)
+    {
+        try {
+            $data = $this->getJsonBody();
+            $menuItemId = $data['menu_item_id'] ?? null;
+            $quantity = $data['quantity'] ?? 1;
+
+            // Validate
+            $order = $this->orderModel->getById($orderId);
+            if (!$order)
+                Response::error('Không tìm thấy đơn hàng');
+            if ($order['status'] == 'PAID' || $order['status'] == 'CANCELLED')
+                Response::error('Không thể sửa đơn hàng đã chốt');
+
+            $menuItem = $this->menuItemModel->getById($menuItemId);
+            if (!$menuItem)
+                Response::error('Món ăn không tồn tại');
+
+            // Create item
+            $price = $menuItem['price'];
+            $id = $this->orderItemModel->create($orderId, $menuItemId, $quantity, $price);
+
+            if ($id) {
+                Response::success('Thêm món thành công');
+            } else {
+                Response::error('Không thể thêm món');
+            }
+        } catch (Exception $e) {
+            Response::error($e->getMessage());
+        }
+    }
+
+    public function updateOrderItemQuantity($itemId)
+    {
+        try {
+            $data = $this->getJsonBody();
+            $quantity = $data['quantity'] ?? null;
+
+            if ($quantity === null || $quantity < 1)
+                Response::error('Số lượng không hợp lệ');
+
+            // Validate item and order
+            $item = $this->orderItemModel->getById($itemId);
+            if (!$item)
+                Response::error('Món không tồn tại');
+
+            $order = $this->orderModel->getById($item['order_id']);
+            if ($order['status'] == 'PAID' || $order['status'] == 'CANCELLED')
+                Response::error('Không thể sửa đơn hàng đã chốt');
+
+            // Optional: Check if item is already cooking/done
+            if ($item['status'] != 'WAITING') {
+                // For simplified Staff Web, we might allow it but warning is better
+                // Response::error('Không thể sửa số lượng món đang nấu/đã xong');
+            }
+
+            $success = $this->orderItemModel->updateQuantity($itemId, $quantity);
+
+            if ($success) {
+                Response::success('Cập nhật số lượng thành công');
+            } else {
+                Response::error('Không thể cập nhật');
+            }
+        } catch (Exception $e) {
+            Response::error($e->getMessage());
+        }
+    }
+
+    public function deleteOrderItem($itemId)
+    {
+        try {
+            // Validate item and order
+            $item = $this->orderItemModel->getById($itemId);
+            if (!$item)
+                Response::error('Món không tồn tại');
+
+            $order = $this->orderModel->getById($item['order_id']);
+            if ($order['status'] == 'PAID' || $order['status'] == 'CANCELLED')
+                Response::error('Không thể sửa đơn hàng đã chốt');
+
+            if ($item['status'] != 'WAITING') {
+                Response::error('Chỉ có thể xóa món đang chờ (WAITING)');
+            }
+
+            $success = $this->orderItemModel->delete($itemId);
+
+            if ($success) {
+                Response::success('Xóa món thành công');
+            } else {
+                Response::error('Không thể xóa món');
             }
         } catch (Exception $e) {
             Response::error($e->getMessage());

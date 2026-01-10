@@ -7,7 +7,7 @@ const STAFF_API_BASE = '/VuonQueRestaurantOrder/backend/src/public/index.php/api
 
 const staffApi = {
     // ==================== Orders ====================
-    
+
     /**
      * Get all orders with optional status filter
      */
@@ -45,8 +45,24 @@ const staffApi = {
     /**
      * Pay order (all items must be DONE)
      */
-    payOrder: (id) => {
+    /**
+     * Pay order (all items must be DONE)
+     */
+    payOrder: (id, type_payment) => {
         return fetch(`${STAFF_API_BASE}/orders/${id}/pay`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type_payment })
+        })
+            .then(r => r.json())
+            .then(r => r.success ? r : Promise.reject(r.message));
+    },
+
+    /**
+     * Cancel order (must have no cooking/done items)
+     */
+    cancelOrder: (id) => {
+        return fetch(`${STAFF_API_BASE}/orders/${id}/cancel`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' }
         })
@@ -64,6 +80,43 @@ const staffApi = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status })
+        })
+            .then(r => r.json())
+            .then(r => r.success ? r : Promise.reject(r.message));
+    },
+
+    /**
+     * Add item to order
+     */
+    addOrderItem: (orderId, menuItemId, quantity) => {
+        return fetch(`${STAFF_API_BASE}/orders/${orderId}/items`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ menu_item_id: menuItemId, quantity })
+        })
+            .then(r => r.json())
+            .then(r => r.success ? r : Promise.reject(r.message));
+    },
+
+    /**
+     * Update item quantity
+     */
+    updateItemQuantity: (itemId, quantity) => {
+        return fetch(`${STAFF_API_BASE}/order-items/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity })
+        })
+            .then(r => r.json())
+            .then(r => r.success ? r : Promise.reject(r.message));
+    },
+
+    /**
+     * Delete order item
+     */
+    deleteItem: (itemId) => {
+        return fetch(`${STAFF_API_BASE}/order-items/${itemId}`, {
+            method: 'DELETE'
         })
             .then(r => r.json())
             .then(r => r.success ? r : Promise.reject(r.message));

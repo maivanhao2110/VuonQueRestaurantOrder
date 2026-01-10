@@ -87,5 +87,48 @@ class OrderItem
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    /**
+     * Create single item
+     */
+    public function create($orderId, $menuItemId, $quantity, $price)
+    {
+        $query = "INSERT INTO " . $this->table_name . "
+                  (order_id, menu_item_id, quantity, price, status)
+                  VALUES (:order_id, :menu_item_id, :quantity, :price, 'WAITING')";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':order_id', $orderId);
+        $stmt->bindParam(':menu_item_id', $menuItemId);
+        $stmt->bindParam(':quantity', $quantity);
+        $stmt->bindParam(':price', $price);
+
+        if ($stmt->execute()) {
+            return $this->conn->lastInsertId();
+        }
+        return false;
+    }
+
+    /**
+     * Update quantity
+     */
+    public function updateQuantity($id, $quantity)
+    {
+        $query = "UPDATE " . $this->table_name . " SET quantity = :quantity WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':quantity', $quantity);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
+
+    /**
+     * Delete item
+     */
+    public function delete($id)
+    {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
 }
 ?>

@@ -3,15 +3,35 @@
  * Invoice Model
  */
 
-class Invoice {
+class Invoice
+{
     private $conn;
     private $table_name = "invoice";
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
-    public function getAll() {
+    public function create($orderId, $totalAmount, $typePayment)
+    {
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (order_id, total_amount, type_payment, created_at)
+                  VALUES (:order_id, :total_amount, :type_payment, NOW())";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':order_id', $orderId);
+        $stmt->bindParam(':total_amount', $totalAmount);
+        $stmt->bindParam(':type_payment', $typePayment);
+
+        if ($stmt->execute()) {
+            return $this->conn->lastInsertId();
+        }
+        return false;
+    }
+
+    public function getAll()
+    {
         $query = "SELECT i.*, o.table_number 
                   FROM " . $this->table_name . " i
                   LEFT JOIN orders o ON i.order_id = o.id
@@ -21,7 +41,8 @@ class Invoice {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getById($id) {
+    public function getById($id)
+    {
         $query = "SELECT i.*, o.table_number 
                   FROM " . $this->table_name . " i
                   LEFT JOIN orders o ON i.order_id = o.id

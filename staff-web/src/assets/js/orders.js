@@ -166,11 +166,41 @@ function renderOrderModal(order) {
     // Body - Items list
     const itemsHtml = order.items.map(item => {
         const itemStatus = getItemStatusInfo(item.status);
+        const qty = parseInt(item.quantity); // Ensure number
+        const canEdit = (order.status !== 'PAID' && order.status !== 'CANCELLED' && item.status === 'WAITING');
+
+        // Quantity Controls
+        let quantityHtml = `x${item.quantity}`;
+        if (canEdit) {
+            quantityHtml = `
+                <div class="quantity-control">
+                    <button class="btn-qty" onclick="changeItemQuantity(${item.id}, ${qty - 1})" title="Giảm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <span>${qty}</span>
+                    <button class="btn-qty" onclick="changeItemQuantity(${item.id}, ${qty + 1})" title="Tăng">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                </div>
+            `;
+        }
+
+        // Delete button
+        let deleteBtn = '';
+        if (canEdit) {
+            deleteBtn = `
+                <button class="btn-delete" onclick="deleteOrderItem(${item.id})" title="Xóa món">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    Xóa
+                </button>
+            `;
+        }
+
         return `
             <div class="order-item-row">
                 <div class="item-info">
-                    <span class="item-name">${item.menu_item_name}</span>
-                    <span class="item-qty">x${item.quantity}</span>
+                    <span class="item-name">${item.menu_item_name} ${deleteBtn}</span>
+                    <span class="item-qty">${quantityHtml}</span>
                     <span class="item-price">${formatCurrency(item.price * item.quantity)}</span>
                 </div>
                 <div class="item-status-controls">
@@ -181,6 +211,16 @@ function renderOrderModal(order) {
         `;
     }).join('');
 
+    // Add Item Button
+    let addItemHtml = '';
+    if (order.status !== 'PAID' && order.status !== 'CANCELLED') {
+        addItemHtml = `
+            <div class="add-item-container" style="text-align: center; margin-top: 15px;">
+                <button class="btn btn-outline-primary" onclick="openAddItemModal(${order.id})">+ Thêm món</button>
+            </div>
+        `;
+    }
+
     document.getElementById('modalOrderBody').innerHTML = `
         <div class="order-meta">
             <p><strong>Khách hàng:</strong> ${order.customer_name || 'Khách'}</p>
@@ -190,6 +230,7 @@ function renderOrderModal(order) {
         <div class="order-items-list">
             <h4>Danh sách món</h4>
             ${itemsHtml}
+            ${addItemHtml}
         </div>
         <div class="order-summary">
             <div class="summary-row total">
@@ -236,6 +277,16 @@ function renderOrderActions(order) {
                 💰 Thanh toán ${canPay ? '' : '(chưa đủ món)'}
             </button>
         `;
+
+        // Check if can cancel (no items cooking/done)
+        // We iterate order.items. If any is COOKING or DONE, disable cancel
+        const hasCookingOrDone = order.items.some(i => i.status === 'COOKING' || i.status === 'DONE');
+        if (!hasCookingOrDone) {
+            html = `
+                <button class="btn btn-danger-outline" onclick="cancelOrder(${order.id})" style="margin-right: auto;">❌ Hủy bàn</button>
+                ${html}
+            `;
+        }
     } else {
         html = `<button class="btn btn-secondary" onclick="closeOrderModal()">Đóng</button>`;
     }
@@ -257,16 +308,55 @@ async function confirmOrder(orderId) {
     }
 }
 
-async function payOrder(orderId) {
-    if (!confirm('Xác nhận thanh toán đơn hàng này?')) return;
+let pendingPaymentOrderId = null;
+
+function showPaymentModal(orderId) {
+    pendingPaymentOrderId = orderId;
+    document.getElementById('paymentModal').style.display = 'flex';
+}
+
+function closePaymentModal() {
+    document.getElementById('paymentModal').style.display = 'none';
+    pendingPaymentOrderId = null;
+}
+
+async function confirmPayment(type) {
+    if (!pendingPaymentOrderId) return;
+
+    // Disable buttons
+    const btns = document.querySelectorAll('#paymentModal button');
+    btns.forEach(b => b.disabled = true);
 
     try {
-        await staffApi.payOrder(orderId);
+        await staffApi.payOrder(pendingPaymentOrderId, type);
         alert('Thanh toán thành công!');
+        closePaymentModal();
         closeOrderModal();
         loadOrders(false);
     } catch (error) {
         console.error('Pay order error:', error);
+        alert('Lỗi: ' + error);
+    } finally {
+        btns.forEach(b => b.disabled = false);
+    }
+}
+
+// Keep old function for backward compatibility if needed, but updated to use modal
+function payOrder(orderId) {
+    showPaymentModal(orderId);
+}
+
+async function cancelOrder(orderId) {
+    if (!confirm('⚠️ CẢNH BÁO: Bạn có chắc chắn muốn hủy bàn này không?\nHành động này không thể hoàn tác!')) {
+        return;
+    }
+
+    try {
+        await staffApi.cancelOrder(orderId);
+        alert('Đã hủy bàn thành công.');
+        closeOrderModal();
+        loadOrders(false);
+    } catch (error) {
         alert('Lỗi: ' + error);
     }
 }
@@ -285,6 +375,164 @@ async function updateItemStatus(itemId, newStatus) {
 async function refreshOrderDetail(orderId) {
     const order = await staffApi.getOrderDetail(orderId);
     renderOrderModal(order);
+}
+
+// ==================== Order Modification ====================
+
+async function changeItemQuantity(itemId, newQuantity) {
+    if (newQuantity < 1) return; // Prevent < 1 via this button, user should use delete for 0
+
+    try {
+        await staffApi.updateItemQuantity(itemId, newQuantity);
+        await refreshOrderDetail(currentOrderId);
+        loadOrders(false);
+    } catch (error) {
+        console.error('Update qty error:', error);
+        alert('Lỗi: ' + error);
+    }
+}
+
+async function deleteOrderItem(itemId) {
+    if (!confirm('Bạn có chắc muốn xóa món này không?')) return;
+
+    try {
+        await staffApi.deleteItem(itemId);
+        await refreshOrderDetail(currentOrderId);
+        loadOrders(false);
+    } catch (error) {
+        console.error('Delete item error:', error);
+        alert('Lỗi: ' + error);
+    }
+}
+
+// Add Item Modal Logic
+let addItemOrderId = null;
+
+async function openAddItemModal(orderId) {
+    addItemOrderId = orderId;
+
+    // Create modal if not exists
+    if (!document.getElementById('addItemModal')) {
+        createAddItemModal();
+    }
+
+    // Load menu
+    try {
+        const categories = await staffApi.getCategories();
+        renderAddItemModal(categories);
+        document.getElementById('addItemModal').style.display = 'flex';
+    } catch (error) {
+        console.error('Load menu error:', error);
+        alert('Không thể tải menu');
+    }
+}
+
+function closeAddItemModal() {
+    document.getElementById('addItemModal').style.display = 'none';
+    addItemOrderId = null;
+}
+
+function createAddItemModal() {
+    const modalHtml = `
+    <div id="addItemModal" class="modal-backdrop" style="display: none; z-index: 1200;">
+        <div class="modal" style="max-width: 600px; height: 80vh;">
+            <div class="modal-header">
+                <h3 class="modal-title">Thêm món</h3>
+                <button class="modal-close" onclick="closeAddItemModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 0; display: flex; flex-direction: column; overflow: hidden;">
+                <div id="addItemCategories" class="category-tabs" style="padding: 10px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #eee;"></div>
+                <div id="addItemList" style="flex: 1; overflow-y: auto; padding: 10px;"></div>
+            </div>
+        </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+async function renderAddItemModal(categories) {
+    // Render Categories
+    // Add "All" tab first
+    let catsHtml = `<button class="btn btn-sm btn-outline-secondary" onclick="loadAddItemMenu(null, this)">Tất cả</button>`;
+
+    catsHtml += categories
+        .filter(c => c.name !== 'Tất cả') // Prevent duplicate "All"
+        .map(c =>
+            `<button class="btn btn-sm btn-outline-secondary" onclick="loadAddItemMenu(${c.id}, this)">${c.name}</button>`
+        ).join('');
+    document.getElementById('addItemCategories').innerHTML = catsHtml;
+
+    // Load "All" by default
+    const firstBtn = document.getElementById('addItemCategories').firstElementChild;
+    loadAddItemMenu(null, firstBtn);
+}
+
+async function loadAddItemMenu(categoryId, btn) {
+    // Active tab style
+    document.querySelectorAll('#addItemCategories button').forEach(b => b.classList.remove('active', 'btn-primary'));
+    document.querySelectorAll('#addItemCategories button').forEach(b => b.classList.add('btn-outline-secondary'));
+    btn.classList.remove('btn-outline-secondary');
+    btn.classList.add('active', 'btn-primary');
+
+    document.getElementById('addItemList').innerHTML = '<div class="loading">Đang tải món...</div>';
+
+    try {
+        // If categoryId is null, fetch all (no query param)
+        // If categoryId is present, append query param
+        let url = `${STAFF_API_BASE}/menu`;
+        if (categoryId) {
+            url += `?category_id=${categoryId}`;
+        }
+
+        const response = await fetch(url).then(r => r.json());
+
+        if (!response.success) throw new Error(response.message);
+
+        const items = response.data;
+        renderAddItemList(items);
+
+    } catch (error) {
+        document.getElementById('addItemList').innerHTML = '<p class="error">Lỗi tải món ăn</p>';
+    }
+}
+
+function renderAddItemList(items) {
+    if (items.length === 0) {
+        document.getElementById('addItemList').innerHTML = '<p style="text-align:center; padding: 20px;">Không có món nào</p>';
+        return;
+    }
+
+    const html = items.map(item => `
+        <div class="menu-item-card" onclick="submitAddItem(${item.id})" style="border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s;">
+            <div style="display: flex; align-items: center;">
+                ${item.image_url ? `<img src="${item.image_url}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 12px;">` : ''}
+                <div>
+                    <div style="font-weight: 500;">${item.name}</div>
+                    <div style="color: #666; font-size: 14px;">${formatCurrency(item.price)}</div>
+                </div>
+            </div>
+            <button class="btn btn-sm btn-primary">+</button>
+        </div>
+    `).join('');
+
+    document.getElementById('addItemList').innerHTML = html;
+}
+
+async function submitAddItem(menuItemId) {
+    if (!addItemOrderId) return;
+
+    // Simple add 1 item immediately
+    try {
+        await staffApi.addOrderItem(addItemOrderId, menuItemId, 1);
+        // Show lightweight feedback instead of alert?
+        // alert('Đã thêm món');
+
+        // Close modal and refresh order detail
+        closeAddItemModal();
+        await refreshOrderDetail(addItemOrderId);
+        loadOrders(false);
+    } catch (error) {
+        alert('Lỗi thêm món: ' + error);
+    }
 }
 
 // ==================== Helper Functions ====================

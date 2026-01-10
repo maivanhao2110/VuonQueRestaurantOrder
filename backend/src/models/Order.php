@@ -160,5 +160,20 @@ class Order
 
         return $stmt->execute();
     }
+
+    /**
+     * Cancel order - set status to CANCELLED and end_at to now
+     */
+    public function cancel($id)
+    {
+        $query = "UPDATE " . $this->table_name . " 
+                  SET status = 'CANCELLED', end_at = NOW() 
+                  WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+
+        return $stmt->execute();
+    }
 }
 ?>
