@@ -50,6 +50,14 @@ switch ($path) {
 		}
 		break;
 
+	case '/api/staff/change-password':
+		if ($requestMethod === 'POST') {
+			$controller->changePassword();
+		} else {
+			Response::error('Method not allowed');
+		}
+		break;
+
 	// ==================== Orders ====================
 	case '/api/staff/orders':
 		if ($requestMethod === 'GET') {

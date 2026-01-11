@@ -855,48 +855,138 @@ tr:hover td {
     }
 }
 
-/* ==================== Header Actions & Premium Buttons ==================== */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Password Visibility Toggle */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-control-password {
+    width: 100%;
+    padding: 10px 40px 10px 12px;
+    border: 1px solid var(--color-neutral-200);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-control-password:focus {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.btn-toggle-password {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    color: var(--color-neutral-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.btn-toggle-password:hover {
+    color: var(--color-primary-600);
+}
+
+.eye-icon {
+    pointer-events: none;
+}
+
+/* Consolidated Header Actions & Profile Dropdown */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
 .staff-greeting {
-    margin-right: 16px;
+    margin-right: 12px;
     font-weight: 600;
     color: var(--color-neutral-600);
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 12px;
+    padding: 8px 16px;
     background: var(--color-neutral-50);
     border-radius: 20px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    border: 1px solid var(--color-neutral-200);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.staff-greeting:hover {
+    background: white;
+    box-shadow: var(--shadow-sm);
+    border-color: var(--color-primary-400);
 }
 
 .staff-greeting::before {
     content: "👤";
-    font-size: 1rem;
+    font-size: 1.1rem;
 }
 
-.btn-header {
+.dropdown-content {
+    display: none;
+    /* Crucial: hidden by default */
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background-color: white;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    z-index: 1000;
+    overflow: hidden;
+    padding: 4px;
+    border: 1px solid var(--color-neutral-100);
+}
+
+.dropdown-content.show {
+    display: block !important;
+    animation: fadeInDown 0.2s ease-out;
+}
+
+.dropdown-content a {
+    color: var(--color-neutral-700) !important;
+    padding: 10px 16px;
+    text-decoration: none !important;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid transparent;
+    gap: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s;
 }
 
-.btn-refresh {
-    background: white;
-    color: var(--color-primary-600);
-    border-color: var(--color-neutral-200);
-    box-shadow: var(--shadow-sm);
+.dropdown-content a:hover {
+    background-color: var(--color-neutral-50);
+    color: var(--color-primary-600) !important;
 }
 
-.btn-refresh:hover {
-    border-color: var(--color-primary-500);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
-    color: var(--color-primary-700);
-    transform: translateY(-1px);
+.dropdown-divider {
+    height: 1px;
+    background: var(--color-neutral-100);
+    margin: 4px 0;
 }
 
 .btn-refresh svg {
@@ -907,10 +997,24 @@ tr:hover td {
     transform: rotate(180deg);
 }
 
-.btn-logout {
-    background: var(--color-neutral-50);
+.btn-sort {
+    background: white;
     color: var(--color-neutral-600);
-    margin-left: 8px;
+    border-color: var(--color-neutral-200);
+    box-shadow: var(--shadow-sm);
+    margin-right: 8px;
+}
+
+.btn-sort:hover {
+    border-color: var(--color-info);
+    color: var(--color-info);
+    background: var(--color-info-bg);
+}
+
+.btn-sort.active-sort {
+    background: var(--color-info-bg);
+    color: var(--color-info);
+    border-color: var(--color-info);
 }
 
 .btn-logout:hover {

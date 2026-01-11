@@ -87,6 +87,60 @@ class StaffController
     }
 
     /**
+     * Change staff password
+     */
+    public function changePassword()
+    {
+        try {
+            $data = $this->getJsonBody();
+            $staffId = $data['staff_id'] ?? null;
+            $oldPassword = $data['old_password'] ?? '';
+            $newPassword = $data['new_password'] ?? '';
+
+            if (!$staffId || $oldPassword === '' || $newPassword === '') {
+                Response::error('Thiếu thông tin thay đổi mật khẩu');
+            }
+
+            // Find staff by ID to get current password hash
+            $query = "SELECT password_hash FROM staff WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $staffId);
+            $stmt->execute();
+            $staff = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$staff) {
+                Response::error('Không tìm thấy thông tin nhân viên');
+            }
+
+            // Verify old password
+            if (!password_verify($oldPassword, $staff['password_hash'])) {
+                Response::error('Mật khẩu cũ không chính xác');
+            }
+
+            if ($oldPassword === $newPassword) {
+                Response::error('Mật khẩu mới không được trùng với mật khẩu cũ');
+            }
+
+            // Hash new password
+            $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+
+            // Update password
+            $query = "UPDATE staff SET password_hash = :password_hash WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':password_hash', $newPasswordHash);
+            $stmt->bindParam(':id', $staffId);
+
+            if ($stmt->execute()) {
+                Response::success('Đổi mật khẩu thành công');
+            } else {
+                Response::error('Không thể cập nhật mật khẩu');
+            }
+        } catch (Exception $e) {
+            Response::error($e->getMessage());
+        }
+    }
+
+    /**
      * Get current staff info
      */
     public function getMe()

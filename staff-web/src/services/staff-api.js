@@ -184,5 +184,22 @@ const staffApi = {
             method: 'DELETE'
         })
             .then(r => r.json());
+    },
+
+    /**
+     * Change staff password
+     */
+    changePassword: (staffId, oldPassword, newPassword) => {
+        return fetch(`${STAFF_API_BASE}/change-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                staff_id: staffId,
+                old_password: oldPassword,
+                new_password: newPassword
+            })
+        })
+            .then(r => r.json())
+            .then(r => r.success ? r : Promise.reject(r.message));
     }
 };

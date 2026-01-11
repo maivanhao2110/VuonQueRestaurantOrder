@@ -6,13 +6,104 @@
 let allOrders = [];
 let currentFilter = '';
 let currentOrderId = null;
+let currentSort = 'DESC'; // Default: Newest first
 let autoRefreshInterval = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     loadOrders();
     startAutoRefresh();
+    initProfile();
 });
+
+// Close dropdown when clicking outside
+window.addEventListener('click', (e) => {
+    if (!e.target.closest('.profile-dropdown')) {
+        const dropdown = document.getElementById('profileDropdown');
+        if (dropdown) dropdown.classList.remove('show');
+    }
+});
+
+function initProfile() {
+    const staffUser = JSON.parse(sessionStorage.getItem('staff_user') || '{}');
+    const nameEl = document.getElementById('staffName');
+    if (staffUser.full_name && nameEl) {
+        nameEl.textContent = 'Xin chào, ' + staffUser.full_name;
+    } else if (!staffUser.id) {
+        // Not logged in or session expired
+        window.location.href = 'login.html';
+    }
+}
+
+function toggleProfileDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown) dropdown.classList.toggle('show');
+}
+
+function logout(e) {
+    if (e) e.preventDefault();
+    sessionStorage.removeItem('staff_user');
+    window.location.href = 'login.html';
+}
+
+// ==================== Password Change ====================
+
+function openChangePasswordModal(e) {
+    if (e) e.preventDefault();
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown) dropdown.classList.remove('show');
+
+    document.getElementById('passwordModal').style.display = 'block';
+}
+
+function closePasswordModal() {
+    document.getElementById('passwordModal').style.display = 'none';
+    document.getElementById('changePasswordForm').reset();
+
+    // Reset all password fields to 'password' type
+    ['oldPassword', 'newPassword', 'confirmNewPassword'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.type = 'password';
+    });
+}
+
+function togglePasswordVisibility(id) {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+    } else {
+        input.type = 'password';
+    }
+}
+
+async function handleChangePassword(e) {
+    e.preventDefault();
+    const oldPass = document.getElementById('oldPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirmPass = document.getElementById('confirmNewPassword').value;
+
+    if (newPass === oldPass) {
+        alert('Mật khẩu mới không được trùng với mật khẩu cũ');
+        return;
+    }
+
+    if (newPass !== confirmPass) {
+        alert('Mật khẩu mới không khớp');
+        return;
+    }
+
+    const staffUser = JSON.parse(sessionStorage.getItem('staff_user') || '{}');
+
+    try {
+        await staffApi.changePassword(staffUser.id, oldPass, newPass);
+        alert('Đổi mật khẩu thành công!');
+        closePasswordModal();
+    } catch (error) {
+        alert('Lỗi: ' + error);
+    }
+}
 
 // ==================== Auto Refresh ====================
 
@@ -75,6 +166,23 @@ function filterOrders(status) {
     loadOrders();
 }
 
+function toggleSort() {
+    currentSort = (currentSort === 'DESC') ? 'ASC' : 'DESC';
+    const label = document.getElementById('sortLabel');
+    if (label) label.textContent = (currentSort === 'DESC') ? 'Mới nhất' : 'Cũ nhất';
+
+    const btn = document.getElementById('btnSort');
+    if (btn) {
+        if (currentSort === 'ASC') {
+            btn.classList.add('active-sort');
+        } else {
+            btn.classList.remove('active-sort');
+        }
+    }
+
+    renderOrders();
+}
+
 // ==================== Order Rendering ====================
 
 function renderOrders() {
@@ -90,7 +198,14 @@ function renderOrders() {
         return;
     }
 
-    grid.innerHTML = allOrders.map(order => createOrderCard(order)).join('');
+    // Sort orders locally
+    const sortedOrders = [...allOrders].sort((a, b) => {
+        const timeA = new Date(a.created_at).getTime();
+        const timeB = new Date(b.created_at).getTime();
+        return currentSort === 'DESC' ? timeB - timeA : timeA - timeB;
+    });
+
+    grid.innerHTML = sortedOrders.map(order => createOrderCard(order)).join('');
 }
 
 function createOrderCard(order) {
@@ -165,7 +280,7 @@ function renderOrderModal(order) {
 
     // Body - Items list
     const itemsHtml = order.items.map(item => {
-        const itemStatus = getItemStatusInfo(item.status);
+        const itemStatus = getItemStatusInfo(item.status, order.status);
         const qty = parseInt(item.quantity); // Ensure number
         const canEdit = (order.status !== 'PAID' && order.status !== 'CANCELLED' && item.status === 'WAITING');
 
@@ -264,6 +379,7 @@ function renderOrderActions(order) {
 
     if (order.status === 'CREATED') {
         html = `
+            <button class="btn btn-danger-outline" onclick="cancelOrder(${order.id})" style="margin-right: auto;">❌ Hủy bàn</button>
             <button class="btn btn-secondary" onclick="closeOrderModal()">Đóng</button>
             <button class="btn btn-primary" onclick="confirmOrder(${order.id})">✓ Xác nhận đơn hàng</button>
         `;
@@ -551,7 +667,11 @@ function getStatusInfo(status) {
     return map[status] || { text: status, class: '' };
 }
 
-function getItemStatusInfo(status) {
+function getItemStatusInfo(status, orderStatus = null) {
+    if (orderStatus === 'CREATED' && status === 'WAITING') {
+        return { text: 'Chờ xác nhận', class: 'item-waiting' };
+    }
+
     const map = {
         'WAITING': { text: 'Chờ nấu', class: 'item-waiting' },
         'COOKING': { text: 'Cooking', class: 'item-cooking' },
