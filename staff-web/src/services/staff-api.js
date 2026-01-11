@@ -33,10 +33,11 @@ const staffApi = {
     /**
      * Confirm order (CREATED -> CONFIRMED)
      */
-    confirmOrder: (id) => {
+    confirmOrder: (id, staffId = null) => {
         return fetch(`${STAFF_API_BASE}/orders/${id}/confirm`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ staff_id: staffId })
         })
             .then(r => r.json())
             .then(r => r.success ? r : Promise.reject(r.message));

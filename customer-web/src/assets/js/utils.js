@@ -142,7 +142,7 @@ function getStatusBadge(status, type = 'order') {
         order: {
             'CREATED': { text: 'Đã tạo', color: 'info' },
             'CONFIRMED': { text: 'Đã xác nhận', color: 'warning' },
-            'COOKING': { text: 'Đang nấu', color: 'info' },
+            'COOKING': { text: 'Cooking', color: 'info' },
             'DONE': { text: 'Hoàn thành', color: 'success' },
             'CANCELLED': { text: 'Đã hủy', color: 'error' }
         }

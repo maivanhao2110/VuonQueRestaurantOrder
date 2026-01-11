@@ -297,8 +297,11 @@ function renderOrderActions(order) {
 // ==================== Order Actions ====================
 
 async function confirmOrder(orderId) {
+    const currentUser = JSON.parse(sessionStorage.getItem('staff_user') || '{}');
+    const staffId = currentUser.id || null;
+
     try {
-        await staffApi.confirmOrder(orderId);
+        await staffApi.confirmOrder(orderId, staffId);
         alert('Đã xác nhận đơn hàng!');
         await refreshOrderDetail(orderId);
         loadOrders(false);
@@ -526,10 +529,9 @@ async function submitAddItem(menuItemId) {
         // Show lightweight feedback instead of alert?
         // alert('Đã thêm món');
 
-        // Close modal and refresh order detail
+        // Đóng modal và tải lại toàn bộ trang theo yêu cầu
         closeAddItemModal();
-        await refreshOrderDetail(addItemOrderId);
-        loadOrders(false);
+        location.reload();
     } catch (error) {
         alert('Lỗi thêm món: ' + error);
     }
@@ -541,7 +543,7 @@ function getStatusInfo(status) {
     const map = {
         'CREATED': { text: 'Chờ xác nhận', class: 'status-created' },
         'CONFIRMED': { text: 'Đã xác nhận', class: 'status-confirmed' },
-        'COOKING': { text: 'Đang nấu', class: 'status-cooking' },
+        'COOKING': { text: 'Cooking', class: 'status-cooking' },
         'DONE': { text: 'Hoàn thành', class: 'status-done' },
         'PAID': { text: 'Đã thanh toán', class: 'status-paid' },
         'CANCELLED': { text: 'Đã hủy', class: 'status-cancelled' }
@@ -552,7 +554,7 @@ function getStatusInfo(status) {
 function getItemStatusInfo(status) {
     const map = {
         'WAITING': { text: 'Chờ nấu', class: 'item-waiting' },
-        'COOKING': { text: 'Đang nấu', class: 'item-cooking' },
+        'COOKING': { text: 'Cooking', class: 'item-cooking' },
         'DONE': { text: 'Đã xong', class: 'item-done' }
     };
     return map[status] || { text: status, class: '' };

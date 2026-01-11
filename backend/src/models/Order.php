@@ -78,15 +78,24 @@ class Order
     /**
      * Update order status and sync order items
      */
-    public function updateStatus($id, $status)
+    public function updateStatus($id, $status, $staffId = null)
     {
         $query = "UPDATE " . $this->table_name . " 
-                  SET status = :status 
-                  WHERE id = :id";
+                  SET status = :status";
+
+        if ($staffId !== null) {
+            $query .= ", staff_id = :staff_id";
+        }
+
+        $query .= " WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':status', $status);
         $stmt->bindParam(':id', $id);
+
+        if ($staffId !== null) {
+            $stmt->bindParam(':staff_id', $staffId);
+        }
 
         if ($stmt->execute()) {
             // Sync order items status
@@ -103,23 +112,23 @@ class Order
     private function syncOrderItemsStatus($orderId, $orderStatus)
     {
         // Map order status to order_item status
-        $itemStatus = 'WAITING';
+        $itemStatus = null;
 
-        if ($orderStatus == 'COOKING') {
-            $itemStatus = 'COOKING';
-        } else if ($orderStatus == 'DONE' || $orderStatus == 'CANCELLED') {
+        if ($orderStatus == 'DONE' || $orderStatus == 'CONFIRMED' || $orderStatus == 'CANCELLED') {
             $itemStatus = 'DONE';
         }
 
-        // Update all items of this order
-        $query = "UPDATE order_item 
-                  SET status = :status 
-                  WHERE order_id = :order_id";
+        if ($itemStatus !== null) {
+            // Update all items of this order
+            $query = "UPDATE order_item 
+                      SET status = :status 
+                      WHERE order_id = :order_id";
 
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':status', $itemStatus);
-        $stmt->bindParam(':order_id', $orderId);
-        $stmt->execute();
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':status', $itemStatus);
+            $stmt->bindParam(':order_id', $orderId);
+            $stmt->execute();
+        }
     }
 
     /**

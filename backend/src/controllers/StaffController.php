@@ -157,7 +157,10 @@ class StaffController
                 Response::error('Đơn hàng không ở trạng thái chờ xác nhận');
             }
 
-            $success = $this->orderModel->updateStatus($id, 'CONFIRMED');
+            $data = $this->getJsonBody();
+            $staffId = $data['staff_id'] ?? null;
+
+            $success = $this->orderModel->updateStatus($id, 'COOKING', $staffId);
 
             if ($success) {
                 Response::success('Xác nhận đơn hàng thành công');
@@ -245,7 +248,7 @@ class StaffController
             $items = $this->orderItemModel->getByOrderId($id);
             foreach ($items as $item) {
                 if ($item['status'] == 'COOKING' || $item['status'] == 'DONE') {
-                    Response::error('Không thể hủy bàn vì có món đang nấu hoặc đã xong');
+                    Response::error('Không thể hủy bàn vì có món COOKING hoặc đã xong');
                 }
             }
 
@@ -279,6 +282,33 @@ class StaffController
             $success = $this->orderItemModel->updateStatus($itemId, $newStatus);
 
             if ($success) {
+                // Check if all items are now DONE
+                $item = $this->orderItemModel->getById($itemId);
+                if ($item) {
+                    $orderId = $item['order_id'];
+                    $items = $this->orderItemModel->getByOrderId($orderId);
+
+                    $allDone = true;
+                    if (empty($items))
+                        $allDone = false;
+                    foreach ($items as $i) {
+                        if ($i['status'] !== 'DONE') {
+                            $allDone = false;
+                            break;
+                        }
+                    }
+
+                    if ($allDone) {
+                        // Mark order as CONFIRMED (Ready)
+                        $this->orderModel->updateStatus($orderId, 'CONFIRMED');
+                    } else {
+                        // Ensure order is in COOKING status if not already
+                        $order = $this->orderModel->getById($orderId);
+                        if ($order && $order['status'] !== 'COOKING' && $order['status'] !== 'CONFIRMED') {
+                            $this->orderModel->updateStatus($orderId, 'COOKING');
+                        }
+                    }
+                }
                 Response::success('Cập nhật trạng thái món thành công');
             } else {
                 Response::error('Không thể cập nhật trạng thái món');
@@ -313,6 +343,11 @@ class StaffController
             $id = $this->orderItemModel->create($orderId, $menuItemId, $quantity, $price);
 
             if ($id) {
+                // Nếu đơn hàng đang ở trạng thái CONFIRMED (đã xong hết món cũ), 
+                // thì chuyển về COOKING để làm món mới vừa thêm vào.
+                if ($order['status'] === 'CONFIRMED') {
+                    $this->orderModel->updateStatus($orderId, 'COOKING');
+                }
                 Response::success('Thêm món thành công');
             } else {
                 Response::error('Không thể thêm món');
@@ -343,7 +378,7 @@ class StaffController
             // Optional: Check if item is already cooking/done
             if ($item['status'] != 'WAITING') {
                 // For simplified Staff Web, we might allow it but warning is better
-                // Response::error('Không thể sửa số lượng món đang nấu/đã xong');
+                // Response::error('Cannot edit quantity of items being cooked or completed');
             }
 
             $success = $this->orderItemModel->updateQuantity($itemId, $quantity);
