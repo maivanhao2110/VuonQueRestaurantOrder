@@ -114,7 +114,7 @@ class Order
         // Map order status to order_item status
         $itemStatus = null;
 
-        if ($orderStatus == 'DONE' || $orderStatus == 'CONFIRMED' || $orderStatus == 'CANCELLED') {
+        if ($orderStatus == 'DONE' || $orderStatus == 'CANCELLED') {
             $itemStatus = 'DONE';
         }
 

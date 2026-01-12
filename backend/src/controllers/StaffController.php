@@ -214,7 +214,7 @@ class StaffController
             $data = $this->getJsonBody();
             $staffId = $data['staff_id'] ?? null;
 
-            $success = $this->orderModel->updateStatus($id, 'COOKING', $staffId);
+            $success = $this->orderModel->updateStatus($id, 'CONFIRMED', $staffId);
 
             if ($success) {
                 Response::success('Xác nhận đơn hàng thành công');
@@ -353,8 +353,8 @@ class StaffController
                     }
 
                     if ($allDone) {
-                        // Mark order as CONFIRMED (Ready)
-                        $this->orderModel->updateStatus($orderId, 'CONFIRMED');
+                        // Mark order as DONE (Ready)
+                        $this->orderModel->updateStatus($orderId, 'DONE');
                     } else {
                         // Ensure order is in COOKING status if not already
                         $order = $this->orderModel->getById($orderId);
