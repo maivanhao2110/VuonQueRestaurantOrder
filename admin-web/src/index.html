@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Vườn Quê Admin</title>
+    <script src="services/auth-check.js"></script>
     <link rel="stylesheet" href="assets/css/MenuManage.css">
 </head>
+
 <body>
     <div class="admin-layout">
         <!-- Sidebar -->
@@ -101,22 +104,212 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 5px;
+        }
+
+        .filter-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .filter-btn.active {
+            background: #2e7d32;
+            color: white;
+        }
+
+        @media (max-width: 900px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
     <script src="services/admin-api.js"></script>
     <script>
-        function loadDashboardStats() {
-            adminApi.getStatistics().then(stats => {
-                if (!stats) return;
-                
-                // Update cards with real data if elements existed, but since we use cards with descriptions, 
-                // let's just add a quick summary bar or update the text.
-                // For now, let's just make sure the API is called to verify connection.
-                console.log('Dashboard stats loaded:', stats);
-            }).catch(err => {
-                console.error('Lỗi khi tải thống kê:', err);
+        let topDishesChart = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup chart UI
+            const dashboardGrid = document.querySelector('.dashboard-grid');
+            const chartsSection = document.createElement('div');
+            chartsSection.className = 'charts-container';
+            chartsSection.innerHTML = `
+                <div class="chart-card">
+                    <h3>Tỷ lệ Danh mục bán ra</h3>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Top 3 Món ăn bán chạy</h3>
+                        <div class="filters">
+                            <button class="filter-btn active" onclick="loadTopDishes('day', this)">Ngày</button>
+                            <button class="filter-btn" onclick="loadTopDishes('week', this)">Tuần</button>
+                            <button class="filter-btn" onclick="loadTopDishes('month', this)">Tháng</button>
+                            <button class="filter-btn" onclick="loadTopDishes('year', this)">Năm</button>
+                        </div>
+                    </div>
+                    <canvas id="dishesChart"></canvas>
+                </div>
+            `;
+            // Insert after dashboard grid
+            dashboardGrid.parentNode.insertBefore(chartsSection, dashboardGrid.nextSibling);
+
+            loadCharts();
+            loadTopDishes('day'); // Load default
+        });
+
+        async function loadCharts() {
+            try {
+                // Fetch stats and menu for category matching
+                const [stats, menu] = await Promise.all([
+                    adminApi.getStatistics(), // Default fetch (usually logic is backend heavy, but here relying on what's available)
+                    adminApi.getMenu()
+                ]);
+
+                if (stats && menu) {
+                    renderCategoryChart(stats, menu);
+                }
+            } catch (err) {
+                console.error('Lỗi tải biểu đồ:', err);
+            }
+        }
+
+        async function loadTopDishes(type, btnElement) {
+            // UI Update
+            if (btnElement) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+            }
+
+            // Calculate Date Range
+            const now = new Date();
+            let from = new Date();
+            let to = new Date();
+
+            if (type === 'day') {
+                from = now; // Today
+            } else if (type === 'week') {
+                const day = now.getDay() || 7;
+                from.setDate(now.getDate() - day + 1);
+            } else if (type === 'month') {
+                from.setDate(1);
+            } else if (type === 'year') {
+                from.setMonth(0, 1);
+            }
+
+            // Allow for slightly explicit 'from' date formatting YYYY-MM-DD
+            const fmt = d => d.toISOString().split('T')[0];
+
+            try {
+                const stats = await adminApi.getStatistics({ from: fmt(from), to: fmt(to) });
+                if (stats && stats.top_items) {
+                    renderTopDishesChart(stats.top_items);
+                }
+            } catch (e) {
+                console.error("Lỗi tải top món:", e);
+            }
+        }
+
+        function renderCategoryChart(stats, menu) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+
+            // Process Aggregation
+            // 1. Map Menu IDs to Category Names
+            const categoryMap = {}; // itemId -> categoryName
+            menu.forEach(item => {
+                categoryMap[item.id] = item.category_name || 'Khác';
+            });
+
+            // 2. Aggregate from Sold Items
+            // Note: stats.top_items might only be TOP items. 
+            // Ideally we need specific category stats. If not available, we estimate from top items provided.
+            // OR we use stats.orders if it had category info. 
+            // Assuming top_items covers enough ground for a "demo" or we note it's based on top items.
+            // BETTER: If stats object has a breakdown. It does not seem so from the viewed file.
+            // Let's use top_items as a proxy for "Sold Items Distribution".
+
+            const catCounts = {};
+            stats.top_items.forEach(item => {
+                const catName = categoryMap[item.menu_item_id] || 'Khác';
+                catCounts[catName] = (catCounts[catName] || 0) + parseInt(item.total_quantity);
+            });
+
+            const labels = Object.keys(catCounts);
+            const data = Object.values(catCounts);
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+                        ]
+                    }]
+                }
             });
         }
-        
-        loadDashboardStats();
+
+        function renderTopDishesChart(items) {
+            const ctx = document.getElementById('dishesChart').getContext('2d');
+
+            // Take top 3
+            const top3 = items.slice(0, 3);
+            const labels = top3.map(i => i.menu_item_name);
+            const data = top3.map(i => parseInt(i.total_quantity));
+
+            if (topDishesChart) {
+                topDishesChart.destroy();
+            }
+
+            topDishesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Số lượng bán',
+                        data: data,
+                        backgroundColor: '#2e7d32'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
     </script>
 </body>
+
 </html>

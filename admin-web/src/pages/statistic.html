@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Thống kê đơn hàng - Admin</title>
+    <script src="../services/auth-check.js"></script>
     <link rel="stylesheet" href="../assets/css/MenuManage.css">
 </head>
+
 <body>
     <div class="admin-layout">
         <aside class="sidebar">
@@ -25,13 +28,16 @@
         <main class="main-content">
             <header class="top-header">
                 <h1 class="page-title">Báo cáo Thống kê</h1>
-                <div class="user-profile"><span class="user-name">Quản trị viên</span><div class="avatar">A</div></div>
+                <div class="user-profile"><span class="user-name">Quản trị viên</span>
+                    <div class="avatar">A</div>
+                </div>
             </header>
 
             <div class="content-scrollable">
                 <div class="data-container">
                     <h2 style="margin-bottom: 24px;">Lọc theo thời gian</h2>
-                    <div class="stat-block" style="display: flex; gap: 20px; align-items: flex-end; margin-bottom: 30px;">
+                    <div class="stat-block"
+                        style="display: flex; gap: 20px; align-items: flex-end; margin-bottom: 30px;">
                         <div class="form-group" style="margin-bottom:0;">
                             <label>Từ ngày</label>
                             <input type="date" id="from">
@@ -42,7 +48,7 @@
                         </div>
                         <button class="btn btn-primary" onclick="fetchStatistic()">Xem báo cáo</button>
                     </div>
-                    
+
                     <div id="stat-result" style="margin-top: 40px;">
                         <!-- Results populate here -->
                     </div>
@@ -50,32 +56,33 @@
             </div>
         </main>
     </div>
-<script>
-function fetchStatistic() {
-    const from = document.getElementById('from').value;
-    const to = document.getElementById('to').value;
-    let url = `/VuonQueRestaurantOrder/backend/src/public/index.php/api/admin/statistics`;
-    const params = [];
-    if (from) params.push(`from=${from}`);
-    if (to) params.push(`to=${to}`);
-    if (params.length) url += '?' + params.join('&');
-    fetch(url).then(r=>r.json()).then(r => {
-        if (!r.success) return alert(r.message);
-        const d = r.data;
-        let html = `<b>Khoảng thời gian:</b> ${d.range.from} - ${d.range.to}<br>`;
-        html += `<b>Tổng đơn:</b> ${d.orders.total} <br>`;
-        html += `<b>Đơn theo trạng thái:</b> ` + Object.entries(d.orders.by_status).map(([k,v])=>`${k}: ${v}`).join(', ') + '<br>';
-        html += `<b>Tổng hóa đơn:</b> ${d.invoices.total}, Đã thanh toán: ${d.invoices.paid}, Chưa thanh toán: ${d.invoices.pending}<br>`;
-        html += `<b>Doanh thu đã thanh toán:</b> ${d.revenue.paid_total.toLocaleString('vi-VN')} ₫<br>`;
-        html += `<b>Top món bán chạy:</b><br><table><tr><th>Tên món</th><th>Số lượng</th><th>Doanh thu</th></tr>`;
-        d.top_items.forEach(item => {
-            html += `<tr><td>${item.menu_item_name}</td><td>${item.total_quantity}</td><td>${parseInt(item.total_amount).toLocaleString('vi-VN')} ₫</td></tr>`;
-        });
-        html += '</table>';
-        document.getElementById('stat-result').innerHTML = html;
-    });
-}
-fetchStatistic();
-</script>
+    <script>
+        function fetchStatistic() {
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            let url = `/VuonQueRestaurantOrder/backend/src/public/index.php/api/admin/statistics`;
+            const params = [];
+            if (from) params.push(`from=${from}`);
+            if (to) params.push(`to=${to}`);
+            if (params.length) url += '?' + params.join('&');
+            fetch(url).then(r => r.json()).then(r => {
+                if (!r.success) return alert(r.message);
+                const d = r.data;
+                let html = `<b>Khoảng thời gian:</b> ${d.range.from} - ${d.range.to}<br>`;
+                html += `<b>Tổng đơn:</b> ${d.orders.total} <br>`;
+                html += `<b>Đơn theo trạng thái:</b> ` + Object.entries(d.orders.by_status).map(([k, v]) => `${k}: ${v}`).join(', ') + '<br>';
+                html += `<b>Tổng hóa đơn:</b> ${d.invoices.total}, Đã thanh toán: ${d.invoices.paid}, Chưa thanh toán: ${d.invoices.pending}<br>`;
+                html += `<b>Doanh thu đã thanh toán:</b> ${d.revenue.paid_total.toLocaleString('vi-VN')} ₫<br>`;
+                html += `<b>Top món bán chạy:</b><br><table><tr><th>Tên món</th><th>Số lượng</th><th>Doanh thu</th></tr>`;
+                d.top_items.forEach(item => {
+                    html += `<tr><td>${item.menu_item_name}</td><td>${item.total_quantity}</td><td>${parseInt(item.total_amount).toLocaleString('vi-VN')} ₫</td></tr>`;
+                });
+                html += '</table>';
+                document.getElementById('stat-result').innerHTML = html;
+            });
+        }
+        fetchStatistic();
+    </script>
 </body>
+
 </html>

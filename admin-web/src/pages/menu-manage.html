@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Quản lý menu - Admin</title>
+    <script src="../services/auth-check.js"></script>
     <link rel="stylesheet" href="../assets/css/MenuManage.css">
 </head>
+
 <body>
     <div class="admin-layout">
         <!-- Sidebar -->
@@ -63,26 +66,28 @@
 
             <div class="content-scrollable">
                 <div class="data-container">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                         <h2 style="margin: 0;">Danh sách món ăn</h2>
                         <button class="btn btn-primary" onclick="showAddForm()">+ Thêm món</button>
                     </div>
 
                     <table id="menu-table">
                         <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên món</th>
-                            <th>Danh mục</th>
-                            <th>Giá</th>
-                            <th>Trạng thái</th>
-                            <th style="text-align: right;">Hành động</th>
-                        </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên món</th>
+                                <th>Danh mục</th>
+                                <th>Giá</th>
+                                <th>Trạng thái</th>
+                                <th style="text-align: right;">Hành động</th>
+                            </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
 
-                    <div id="menu-form" style="display:none; margin-top: 30px; border-top: 1px solid var(--color-neutral-200); padding-top: 30px;">
+                    <div id="menu-form"
+                        style="display:none; margin-top: 30px; border-top: 1px solid var(--color-neutral-200); padding-top: 30px;">
                         <h2 id="form-title">Thêm món</h2>
                         <div class="form-group">
                             <label>Tên món:</label>
@@ -110,97 +115,99 @@
                         </div>
                         <div style="display: flex; gap: 12px; margin-top: 20px;">
                             <button class="btn btn-primary" onclick="submitMenu()">Lưu lại</button>
-                            <button class="btn" style="background: var(--color-neutral-200);" onclick="hideForm()">Hủy</button>
+                            <button class="btn" style="background: var(--color-neutral-200);"
+                                onclick="hideForm()">Hủy</button>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
-<script src="../services/admin-api.js"></script>
-<script>
-let editingId = null;
-let categories = [];
-function fetchMenu() {
-    adminApi.getMenu().then(data => {
-        const tbody = document.querySelector('#menu-table tbody');
-        tbody.innerHTML = '';
-        data.forEach(item => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
+    <script src="../services/admin-api.js"></script>
+    <script>
+        let editingId = null;
+        let categories = [];
+        function fetchMenu() {
+            adminApi.getMenu().then(data => {
+                const tbody = document.querySelector('#menu-table tbody');
+                tbody.innerHTML = '';
+                data.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
                 <td>${item.id}</td>
                 <td><strong>${item.name}</strong></td>
-                <td>${item.category_name||''}</td>
+                <td>${item.category_name || ''}</td>
                 <td>${new Intl.NumberFormat('vi-VN').format(item.price)}đ</td>
-                <td><span style="color: ${item.is_available?'var(--color-primary-600)':'var(--color-neutral-400)'}; font-weight: 600;">${item.is_available?'Sẵn sàng':'Hết món'}</span></td>
+                <td><span style="color: ${item.is_available ? 'var(--color-primary-600)' : 'var(--color-neutral-400)'}; font-weight: 600;">${item.is_available ? 'Sẵn sàng' : 'Hết món'}</span></td>
                 <td style="text-align: right;">
                     <button class="btn" style="padding: 6px 12px; background: var(--color-primary-50); color: var(--color-primary-700); margin-right: 8px;" onclick="editMenu(${item.id})">Sửa</button>
                     <button class="btn" style="padding: 6px 12px; background: #fee2e2; color: #ef4444;" onclick="deleteMenu(${item.id})">Xóa</button>
                 </td>`;
-            tbody.appendChild(tr);
-        });
-    });
-}
-function fetchCategories() {
-    adminApi.getCategories().then(data => {
-        categories = data;
-        const sel = document.getElementById('category_id');
-        sel.innerHTML = '';
-        data.forEach(cat => {
-            const opt = document.createElement('option');
-            opt.value = cat.id;
-            opt.textContent = cat.name;
-            sel.appendChild(opt);
-        });
-    });
-}
-function showAddForm() {
-    editingId = null;
-    document.getElementById('form-title').innerText = 'Thêm món';
-    document.getElementById('menu-form').style.display = '';
-    document.querySelectorAll('#menu-form input').forEach(i=>i.value='');
-    document.getElementById('is_available').checked = true;
-    fetchCategories();
-}
-function editMenu(id) {
-    adminApi.getMenu(id).then(item => {
-        editingId = id;
-        document.getElementById('form-title').innerText = 'Sửa món';
-        document.getElementById('menu-form').style.display = '';
-        document.getElementById('name').value = item.name;
-        document.getElementById('category_id').value = item.category_id;
-        document.getElementById('price').value = item.price;
-        document.getElementById('image_url').value = item.image_url||'';
-        document.getElementById('description').value = item.description||'';
-        document.getElementById('is_available').checked = item.is_available==1;
-        fetchCategories();
-    });
-}
-function hideForm() {
-    document.getElementById('menu-form').style.display = 'none';
-}
-function submitMenu() {
-    const data = {
-        name: document.getElementById('name').value,
-        category_id: document.getElementById('category_id').value,
-        price: document.getElementById('price').value,
-        image_url: document.getElementById('image_url').value,
-        description: document.getElementById('description').value,
-        is_available: document.getElementById('is_available').checked ? 1 : 0
-    };
-    if (editingId) {
-        adminApi.updateMenu(editingId, data).then(fetchMenu);
-    } else {
-        adminApi.createMenu(data).then(fetchMenu);
-    }
-    hideForm();
-}
-function deleteMenu(id) {
-    if (confirm('Xóa món này?')) {
-        adminApi.deleteMenu(id).then(fetchMenu);
-    }
-}
-fetchMenu();
-</script>
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+        function fetchCategories() {
+            adminApi.getCategories().then(data => {
+                categories = data;
+                const sel = document.getElementById('category_id');
+                sel.innerHTML = '';
+                data.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.textContent = cat.name;
+                    sel.appendChild(opt);
+                });
+            });
+        }
+        function showAddForm() {
+            editingId = null;
+            document.getElementById('form-title').innerText = 'Thêm món';
+            document.getElementById('menu-form').style.display = '';
+            document.querySelectorAll('#menu-form input').forEach(i => i.value = '');
+            document.getElementById('is_available').checked = true;
+            fetchCategories();
+        }
+        function editMenu(id) {
+            adminApi.getMenu(id).then(item => {
+                editingId = id;
+                document.getElementById('form-title').innerText = 'Sửa món';
+                document.getElementById('menu-form').style.display = '';
+                document.getElementById('name').value = item.name;
+                document.getElementById('category_id').value = item.category_id;
+                document.getElementById('price').value = item.price;
+                document.getElementById('image_url').value = item.image_url || '';
+                document.getElementById('description').value = item.description || '';
+                document.getElementById('is_available').checked = item.is_available == 1;
+                fetchCategories();
+            });
+        }
+        function hideForm() {
+            document.getElementById('menu-form').style.display = 'none';
+        }
+        function submitMenu() {
+            const data = {
+                name: document.getElementById('name').value,
+                category_id: document.getElementById('category_id').value,
+                price: document.getElementById('price').value,
+                image_url: document.getElementById('image_url').value,
+                description: document.getElementById('description').value,
+                is_available: document.getElementById('is_available').checked ? 1 : 0
+            };
+            if (editingId) {
+                adminApi.updateMenu(editingId, data).then(fetchMenu);
+            } else {
+                adminApi.createMenu(data).then(fetchMenu);
+            }
+            hideForm();
+        }
+        function deleteMenu(id) {
+            if (confirm('Xóa món này?')) {
+                adminApi.deleteMenu(id).then(fetchMenu);
+            }
+        }
+        fetchMenu();
+    </script>
 </body>
+
 </html>

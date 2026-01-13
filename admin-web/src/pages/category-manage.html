@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Danh mục - Vườn Quê Admin</title>
+    <script src="../services/auth-check.js"></script>
     <link rel="stylesheet" href="../assets/css/MenuManage.css">
 </head>
+
 <body>
     <div class="admin-layout">
         <!-- Sidebar -->
@@ -64,7 +67,8 @@
 
             <div class="content-scrollable">
                 <div class="data-container">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                         <h2 style="margin: 0;">Danh sách Danh mục</h2>
                         <button class="btn btn-primary" onclick="showAddForm()">+ Thêm Danh mục</button>
                     </div>
@@ -85,7 +89,8 @@
                     </table>
 
                     <!-- Add/Edit Form -->
-                    <div id="category-form" style="display:none; margin-top: 30px; border-top: 1px solid var(--color-neutral-200); padding-top: 30px;">
+                    <div id="category-form"
+                        style="display:none; margin-top: 30px; border-top: 1px solid var(--color-neutral-200); padding-top: 30px;">
                         <h3 id="form-title">Thêm Danh mục mới</h3>
                         <input type="hidden" id="category-id">
                         <div class="form-group">
@@ -102,7 +107,8 @@
                         </div>
                         <div style="display: flex; gap: 12px; margin-top: 20px;">
                             <button class="btn btn-primary" onclick="saveCategory()">Lưu lại</button>
-                            <button class="btn" style="background: var(--color-neutral-200);" onclick="hideForm()">Hủy</button>
+                            <button class="btn" style="background: var(--color-neutral-200);"
+                                onclick="hideForm()">Hủy</button>
                         </div>
                     </div>
                 </div>
@@ -110,13 +116,13 @@
         </main>
     </div>
 
-        <script src="../services/admin-api.js"></script>
+    <script src="../services/admin-api.js"></script>
     <script>
         function fetchCategories() {
             adminApi.getCategories().then(data => {
                 const tbody = document.querySelector('#category-table tbody');
                 tbody.innerHTML = '';
-                
+
                 data.forEach(cat => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -187,4 +193,5 @@
         fetchCategories();
     </script>
 </body>
+
 </html>
