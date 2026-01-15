@@ -5,11 +5,13 @@
 
 /**
  * Place order from cart
- * @param {string} customerName - Customer name
+ * @param {string} customerName - Customer name (required)
  * @param {string} note - Order note
+ * @param {string} phone - Customer phone (optional)
+ * @param {string} email - Customer email (optional)
  * @returns {Promise<Object|null>} Created order or null
  */
-async function placeOrder(customerName, note = '') {
+async function placeOrder(customerName, note = '', phone = '', email = '') {
     try {
         // Get table number
         const tableNumber = getTableNumber();
@@ -35,7 +37,9 @@ async function placeOrder(customerName, note = '') {
             customer_name: finalCustomerName,
             table_number: tableNumber,
             items: cartManager.getOrderItems(),
-            note: note.trim()
+            note: note.trim(),
+            phone: phone.trim(),
+            email: email.trim()
         };
 
         // Submit order to API

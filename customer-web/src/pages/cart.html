@@ -37,6 +37,44 @@
             <!-- Order Summary (shown when cart has items) -->
             <div id="orderSummary" class="hidden">
                 <div class="summary-card">
+                    <h3 class="summary-title">Thông tin khách hàng</h3>
+                    
+                    <!-- Customer Name (Required) -->
+                    <div class="form-group">
+                        <label class="form-label" for="customerName">Tên khách hàng <span style="color: #ef4444;">*</span></label>
+                        <input 
+                            type="text" 
+                            id="customerName" 
+                            class="input" 
+                            placeholder="Nhập tên của bạn"
+                            required
+                        >
+                    </div>
+
+                    <!-- Customer Phone (Optional) -->
+                    <div class="form-group">
+                        <label class="form-label" for="customerPhone">Số điện thoại</label>
+                        <input 
+                            type="tel" 
+                            id="customerPhone" 
+                            class="input" 
+                            placeholder="Ví dụ: 0901234567"
+                        >
+                    </div>
+
+                    <!-- Customer Email (Optional) -->
+                    <div class="form-group">
+                        <label class="form-label" for="customerEmail">Email</label>
+                        <input 
+                            type="email" 
+                            id="customerEmail" 
+                            class="input" 
+                            placeholder="Ví dụ: email@example.com"
+                        >
+                    </div>
+                </div>
+
+                <div class="summary-card" style="margin-top: 16px;">
                     <h3 class="summary-title">Thông tin đơn hàng</h3>
                     
                     <!-- Order Note -->

@@ -266,8 +266,23 @@ function showLocalConfirm(message, onConfirm) {
  */
 window.handleCheckout = async function() {
     try {
+        // Get customer info
+        const customerNameEl = document.getElementById('customerName');
+        const customerPhoneEl = document.getElementById('customerPhone');
+        const customerEmailEl = document.getElementById('customerEmail');
         const orderNoteEl = document.getElementById('orderNote');
+        
+        const customerName = customerNameEl ? customerNameEl.value.trim() : '';
+        const customerPhone = customerPhoneEl ? customerPhoneEl.value.trim() : '';
+        const customerEmail = customerEmailEl ? customerEmailEl.value.trim() : '';
         const orderNote = orderNoteEl ? orderNoteEl.value.trim() : '';
+
+        // Validate required fields
+        if (!customerName) {
+            alert('Vui lòng nhập tên của bạn!');
+            if (customerNameEl) customerNameEl.focus();
+            return;
+        }
 
         if (!cartManager || cartManager.isEmpty()) return;
 
@@ -280,7 +295,8 @@ window.handleCheckout = async function() {
             `Xác nhận đặt ${itemCount} món với tổng tiền ${format(total)}?`,
             async () => {
                 if (typeof placeOrder === 'function') {
-                    const order = await placeOrder('', orderNote);
+                    // Pass customer info to placeOrder
+                    const order = await placeOrder(customerName, orderNote, customerPhone, customerEmail);
                     if (order) {
                         const tableNumber = typeof getTableNumber === 'function' ? getTableNumber() : null;
                         const redirectUrl = tableNumber ? `order-status.html?ban=${tableNumber}` : 'order-status.html';
