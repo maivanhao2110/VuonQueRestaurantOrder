@@ -6,9 +6,19 @@
 let groupedTables = [];
 let selectedTable = null;
 
+
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initProfile();
     loadActiveTables();
+});
+
+// Close dropdown when clicking outside
+window.addEventListener('click', (e) => {
+    if (!e.target.closest('.profile-dropdown')) {
+        const dropdown = document.getElementById('profileDropdown');
+        if (dropdown) dropdown.classList.remove('show');
+    }
 });
 
 function initProfile() {
@@ -16,6 +26,79 @@ function initProfile() {
     const nameEl = document.getElementById('staffName');
     if (staffUser.full_name && nameEl) {
         nameEl.textContent = 'Xin chào, ' + staffUser.full_name;
+    } else if (!staffUser.id) {
+        // Not logged in or session expired
+        window.location.href = 'login.html';
+    }
+}
+
+function toggleProfileDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown) dropdown.classList.toggle('show');
+}
+
+function logout(e) {
+    if (e) e.preventDefault();
+    sessionStorage.removeItem('staff_user');
+    window.location.href = 'login.html';
+}
+
+// ==================== Password Change ====================
+
+function openChangePasswordModal(e) {
+    if (e) e.preventDefault();
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown) dropdown.classList.remove('show');
+
+    document.getElementById('passwordModal').style.display = 'block';
+}
+
+function closePasswordModal() {
+    document.getElementById('passwordModal').style.display = 'none';
+    document.getElementById('changePasswordForm').reset();
+
+    // Reset all password fields to 'password' type
+    ['oldPassword', 'newPassword', 'confirmNewPassword'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.type = 'password';
+    });
+}
+
+function togglePasswordVisibility(id) {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+    } else {
+        input.type = 'password';
+    }
+}
+
+async function handleChangePassword(e) {
+    e.preventDefault();
+    const oldPass = document.getElementById('oldPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirmPass = document.getElementById('confirmNewPassword').value;
+
+    if (newPass === oldPass) {
+        alert('Mật khẩu mới không được trùng với mật khẩu cũ');
+        return;
+    }
+
+    if (newPass !== confirmPass) {
+        alert('Mật khẩu mới không khớp');
+        return;
+    }
+
+    const staffUser = JSON.parse(sessionStorage.getItem('staff_user') || '{}');
+
+    try {
+        await staffApi.changePassword(staffUser.id, oldPass, newPass);
+        alert('Đổi mật khẩu thành công!');
+        closePasswordModal();
+    } catch (error) {
+        alert('Lỗi: ' + error);
     }
 }
 
