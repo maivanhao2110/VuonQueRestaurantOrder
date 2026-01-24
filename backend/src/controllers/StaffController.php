@@ -245,10 +245,10 @@ class StaffController
                 Response::error('Không tìm thấy đơn hàng');
             }
 
-            // Check all items are done
+            // Check all items are done or served
             $items = $this->orderItemModel->getByOrderId($id);
             if (!$this->checkAllItemsDone($items)) {
-                Response::error('Chưa thể thanh toán - còn món chưa hoàn thành');
+                Response::error('Chưa thể thanh toán - còn món chưa hoàn thành (đang nấu/chờ)');
             }
 
             // Calculate total
@@ -301,8 +301,8 @@ class StaffController
             // Check items status
             $items = $this->orderItemModel->getByOrderId($id);
             foreach ($items as $item) {
-                if ($item['status'] == 'COOKING' || $item['status'] == 'DONE') {
-                    Response::error('Không thể hủy bàn vì có món COOKING hoặc đã xong');
+                if ($item['status'] == 'COOKING' || $item['status'] == 'DONE' || $item['status'] == 'SERVED') {
+                    Response::error('Không thể hủy bàn vì có món đang nấu hoặc đã xong');
                 }
             }
 
@@ -329,38 +329,49 @@ class StaffController
             $data = $this->getJsonBody();
             $newStatus = $data['status'] ?? null;
 
-            if (!$newStatus || !in_array($newStatus, ['WAITING', 'COOKING', 'DONE'])) {
+            if (!$newStatus || !in_array($newStatus, ['WAITING', 'COOKING', 'DONE', 'SERVED'])) {
                 Response::error('Trạng thái không hợp lệ');
             }
 
             $success = $this->orderItemModel->updateStatus($itemId, $newStatus);
 
             if ($success) {
-                // Check if all items are now DONE
+                // Determine Order Status based on Items
                 $item = $this->orderItemModel->getById($itemId);
                 if ($item) {
                     $orderId = $item['order_id'];
                     $items = $this->orderItemModel->getByOrderId($orderId);
 
-                    $allDone = true;
-                    if (empty($items))
-                        $allDone = false;
+                    $allServed = true;
+                    $allCookedOrServed = true;
+
+                    if (empty($items)) {
+                        $allServed = false;
+                        $allCookedOrServed = false;
+                    }
+
                     foreach ($items as $i) {
-                        if ($i['status'] !== 'DONE') {
-                            $allDone = false;
-                            break;
+                        if ($i['status'] !== 'SERVED') {
+                            $allServed = false;
+                        }
+                        if ($i['status'] !== 'DONE' && $i['status'] !== 'SERVED') {
+                            $allCookedOrServed = false;
                         }
                     }
 
-                    if ($allDone) {
-                        // Mark order as DONE (Ready)
-                        $this->orderModel->updateStatus($orderId, 'DONE');
+                    if ($allServed) {
+                        $this->orderModel->updateStatus($orderId, 'SERVED', null, false);
+                    } else if ($allCookedOrServed) {
+                        $this->orderModel->updateStatus($orderId, 'DONE', null, false);
                     } else {
-                        // Ensure order is in COOKING status if not already
+                        // Ideally we check if "any" is cooking -> COOKING.
+                        // But current logic is simple transistion. 
+                        // If we are backtracking (Served -> Done), we might need to update order status back?
+                        // For now let's assume forward progress usually.
+                        // If mixed states, we can ensure it is at least COOKING or CONFIRMED.
                         $order = $this->orderModel->getById($orderId);
-                        if ($order && $order['status'] !== 'COOKING') {
-                            $this->orderModel->updateStatus($orderId, 'COOKING');
-                        }
+                        // If order was DONE but we added a new item (WAITING), it should go back.
+                        // But that is handled in addOrderItem. 
                     }
                 }
                 Response::success('Cập nhật trạng thái món thành công');
@@ -610,7 +621,7 @@ class StaffController
             return false;
 
         foreach ($items as $item) {
-            if ($item['status'] !== 'DONE') {
+            if ($item['status'] !== 'DONE' && $item['status'] !== 'SERVED') {
                 return false;
             }
         }

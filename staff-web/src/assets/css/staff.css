@@ -258,6 +258,12 @@ body {
     color: var(--color-success);
 }
 
+.order-status.status-served {
+    background-color: #e3f2fd;
+    color: #2196F3;
+    border: 1px solid #bbdefb;
+}
+
 .order-status.status-paid {
     background: var(--color-neutral-200);
     color: var(--color-neutral-600);
@@ -463,6 +469,11 @@ body {
     color: var(--color-success);
 }
 
+.item-status.item-served {
+    background-color: #e3f2fd;
+    color: #2196F3;
+}
+
 .done-check {
     color: var(--color-success);
     font-size: 1.25rem;
@@ -545,6 +556,15 @@ body {
 
 .btn-danger:hover {
     background: #dc2626;
+}
+
+.btn-serve {
+    background: #2196F3;
+    color: white;
+}
+
+.btn-serve:hover {
+    background: #1976D2;
 }
 
 .btn.disabled {

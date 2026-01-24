@@ -211,7 +211,7 @@ function renderOrders() {
 function createOrderCard(order) {
     const statusInfo = getStatusInfo(order.status);
     const itemCount = order.items ? order.items.length : 0;
-    const doneCount = order.items ? order.items.filter(i => i.status === 'DONE').length : 0;
+    const doneCount = order.items ? order.items.filter(i => i.status === 'DONE' || i.status === 'SERVED').length : 0;
     const createdTime = formatTime(order.created_at);
 
     return `
@@ -360,7 +360,7 @@ function renderOrderModal(order) {
 }
 
 function renderItemStatusButtons(item, orderStatus) {
-    // Only show buttons if order is confirmed or cooking
+    // Only show buttons if order is confirmed or cooking or done/served
     if (orderStatus === 'CREATED' || orderStatus === 'PAID' || orderStatus === 'CANCELLED') {
         return '';
     }
@@ -369,6 +369,10 @@ function renderItemStatusButtons(item, orderStatus) {
         return `<button class="btn btn-sm btn-warning" onclick="updateItemStatus(${item.id}, 'COOKING')">Bắt đầu nấu</button>`;
     } else if (item.status === 'COOKING') {
         return `<button class="btn btn-sm btn-success" onclick="updateItemStatus(${item.id}, 'DONE')">Hoàn thành</button>`;
+    } else if (item.status === 'DONE') {
+        return `<button class="btn btn-sm btn-serve" onclick="updateItemStatus(${item.id}, 'SERVED')">Phục vụ</button>`;
+    } else if (item.status === 'SERVED') {
+        return `<span class="done-check">✓</span>`;
     } else {
         return `<span class="done-check">✓</span>`;
     }
@@ -383,7 +387,7 @@ function renderOrderActions(order) {
             <button class="btn btn-secondary" onclick="closeOrderModal()">Đóng</button>
             <button class="btn btn-primary" onclick="confirmOrder(${order.id})">✓ Xác nhận đơn hàng</button>
         `;
-    } else if (order.status === 'CONFIRMED' || order.status === 'COOKING' || order.status === 'DONE') {
+    } else if (order.status === 'CONFIRMED' || order.status === 'COOKING' || order.status === 'DONE' || order.status === 'SERVED') {
         const canPay = order.all_items_done;
         html = `
             <button class="btn btn-secondary" onclick="closeOrderModal()">Đóng</button>
@@ -394,9 +398,9 @@ function renderOrderActions(order) {
             </button>
         `;
 
-        // Check if can cancel (no items cooking/done)
-        // We iterate order.items. If any is COOKING or DONE, disable cancel
-        const hasCookingOrDone = order.items.some(i => i.status === 'COOKING' || i.status === 'DONE');
+        // Check if can cancel (no items cooking/done/served)
+        // We iterate order.items. If any is COOKING or DONE or SERVED, disable cancel
+        const hasCookingOrDone = order.items.some(i => i.status === 'COOKING' || i.status === 'DONE' || i.status === 'SERVED');
         if (!hasCookingOrDone) {
             html = `
                 <button class="btn btn-danger-outline" onclick="cancelOrder(${order.id})" style="margin-right: auto;">❌ Hủy bàn</button>
@@ -661,6 +665,7 @@ function getStatusInfo(status) {
         'CONFIRMED': { text: 'Đã xác nhận', class: 'status-confirmed' },
         'COOKING': { text: 'Cooking', class: 'status-cooking' },
         'DONE': { text: 'Hoàn thành', class: 'status-done' },
+        'SERVED': { text: 'Đã phục vụ', class: 'status-served' },
         'PAID': { text: 'Đã thanh toán', class: 'status-paid' },
         'CANCELLED': { text: 'Đã hủy', class: 'status-cancelled' }
     };
@@ -675,7 +680,8 @@ function getItemStatusInfo(status, orderStatus = null) {
     const map = {
         'WAITING': { text: 'Chờ nấu', class: 'item-waiting' },
         'COOKING': { text: 'Cooking', class: 'item-cooking' },
-        'DONE': { text: 'Đã xong', class: 'item-done' }
+        'DONE': { text: 'Đã xong', class: 'item-done' },
+        'SERVED': { text: 'Đã phục vụ', class: 'item-served' }
     };
     return map[status] || { text: status, class: '' };
 }

@@ -78,7 +78,7 @@ class Order
     /**
      * Update order status and sync order items
      */
-    public function updateStatus($id, $status, $staffId = null)
+    public function updateStatus($id, $status, $staffId = null, $syncItems = true)
     {
         $query = "UPDATE " . $this->table_name . " 
                   SET status = :status";
@@ -101,7 +101,9 @@ class Order
 
         if ($stmt->execute()) {
             // Sync order items status
-            $this->syncOrderItemsStatus($id, $status);
+            if ($syncItems) {
+                $this->syncOrderItemsStatus($id, $status);
+            }
             return true;
         }
 
