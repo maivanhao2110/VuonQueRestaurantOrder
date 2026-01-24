@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 24, 2026 at 07:33 AM
+-- Generation Time: Jan 24, 2026 at 03:20 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -113,15 +113,15 @@ INSERT INTO `menu_item` (`id`, `category_id`, `name`, `price`, `image_url`, `des
 (31, 3, 'Lươn xào sả ớt', 199000.00, 'https://i.ytimg.com/vi/tcQb5Xw0s6k/maxresdefault.jpg', 'Lươn xào sả ớt cay', 1, '2026-01-24 12:27:11'),
 (32, 3, 'Lươn xào lá lốt', 199000.00, 'https://i.ytimg.com/vi/wgwa4vf_0Bk/maxresdefault.jpg', 'Lươn xào lá lốt', 1, '2026-01-24 12:27:11'),
 (33, 3, 'Lươn om chuối đậu', 269000.00, 'https://tse2.mm.bing.net/th/id/OIP.OhHHqFhViUEWwE37D9mCVgHaFj?cb=defcache2&defcache=1&rs=1&pid=ImgDetMain&o=7&rm=3', 'Lươn om chuối đậu đậm vị', 1, '2026-01-24 12:27:11'),
-(34, 5, 'Nem nắm Vườn Quê', 79000.00, 'https://th.bing.com/th/id/OIP.oJtPIWPTzjChLuQQ4TnzewHaET?w=298&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(35, 5, 'Cá đù 1 nắng chiên giòn', 89000.00, 'https://th.bing.com/th/id/OIP.uviXzHgscdDXVRWEgqAn0AHaFP?w=261&h=184&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(36, 5, 'Cá trinh 1 nắng chiên giòn', 119000.00, 'https://th.bing.com/th/id/OIP.27hhIwP4dIJJXwIWhElhgQHaEK?w=328&h=184&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(37, 5, 'Khoai tây chiên', 60000.00, 'https://th.bing.com/th/id/OIP.I4XIJYqGmC29Z-ANUpwI-AHaEx?w=314&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(38, 5, 'Đậu hũ chiên giòn', 60000.00, 'https://th.bing.com/th/id/OIP.p2bgANdB6HvOaArrXYcgWwHaEo?w=322&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(39, 5, 'Đậu hũ lướt ván', 60000.00, 'https://th.bing.com/th/id/OIP.lBA3O1XJ4Agtw_bz-Q2sUgHaFj?w=222&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(40, 5, 'Đậu hũ chiên sả', 79000.00, 'https://th.bing.com/th/id/OIP.V9HFnafAfU_3rFFBSHZlUQHaFF?w=270&h=186&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(41, 5, 'Trứng chiên lá mơ', 79000.00, 'https://th.bing.com/th/id/OIP.EJHbZo18ac3GJV3fYiFZXgHaEK?o=7&cb=defcache2&rm=3&defcache=1&rs=1&pid=ImgDetMain', '', 1, '2026-01-24 12:29:08'),
-(42, 5, 'Đậu hũ mỡ hành', 79000.00, 'https://th.bing.com/th/id/OIP.EJHbZo18ac3GJV3fYiFZXgHaEK?o=7&cb=defcache2&rm=3&defcache=1&rs=1&pid=ImgDetMain', '', 1, '2026-01-24 12:29:08'),
+(34, 6, 'Nem nắm Vườn Quê', 79000.00, 'https://th.bing.com/th/id/OIP.oJtPIWPTzjChLuQQ4TnzewHaET?w=298&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
+(35, 6, 'Cá đù 1 nắng chiên giòn', 89000.00, 'https://th.bing.com/th/id/OIP.uviXzHgscdDXVRWEgqAn0AHaFP?w=261&h=184&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
+(36, 6, 'Cá trinh 1 nắng chiên giòn', 119000.00, 'https://th.bing.com/th/id/OIP.27hhIwP4dIJJXwIWhElhgQHaEK?w=328&h=184&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
+(37, 6, 'Khoai tây chiên', 60000.00, 'https://th.bing.com/th/id/OIP.I4XIJYqGmC29Z-ANUpwI-AHaEx?w=314&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
+(38, 6, 'Đậu hũ chiên giòn', 60000.00, 'https://th.bing.com/th/id/OIP.p2bgANdB6HvOaArrXYcgWwHaEo?w=322&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
+(39, 6, 'Đậu hũ lướt ván', 60000.00, 'https://th.bing.com/th/id/OIP.lBA3O1XJ4Agtw_bz-Q2sUgHaFj?w=222&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
+(40, 6, 'Đậu hũ chiên sả', 79000.00, 'https://th.bing.com/th/id/OIP.V9HFnafAfU_3rFFBSHZlUQHaFF?w=270&h=186&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
+(41, 6, 'Trứng chiên lá mơ', 79000.00, 'https://th.bing.com/th/id/OIP.EJHbZo18ac3GJV3fYiFZXgHaEK?o=7&cb=defcache2&rm=3&defcache=1&rs=1&pid=ImgDetMain', '', 1, '2026-01-24 12:29:08'),
+(42, 6, 'Đậu hũ mỡ hành', 79000.00, 'https://th.bing.com/th/id/OIP.EJHbZo18ac3GJV3fYiFZXgHaEK?o=7&cb=defcache2&rm=3&defcache=1&rs=1&pid=ImgDetMain', '', 1, '2026-01-24 12:29:08'),
 (54, 2, 'Bia Hà Nội', 25000.00, 'https://th.bing.com/th/id/OIP.yz3n6zY3S3Y4ZpJk8x8n9gHaHa', 'Bia Hà Nội lon/chai', 1, '2026-01-24 12:32:47'),
 (55, 2, 'Bia Tiger', 30000.00, 'https://th.bing.com/th/id/OIP.wC0eGz7y3J0N9lFQn7FZJgHaHa', 'Bia Tiger lon', 1, '2026-01-24 12:32:47'),
 (56, 2, 'Bia Heineken', 35000.00, 'https://th.bing.com/th/id/OIP.0m8bH0P3y1pKJZy2H8mXqAHaHa', 'Bia Heineken lon', 1, '2026-01-24 12:32:47'),
@@ -145,7 +145,7 @@ CREATE TABLE `orders` (
   `customer_name` varchar(100) NOT NULL,
   `table_number` int(11) NOT NULL,
   `staff_id` int(11) DEFAULT NULL,
-  `status` enum('CREATED','CONFIRMED','COOKING','DONE','PAID','CANCELLED') DEFAULT 'CREATED',
+  `status` enum('CREATED','CONFIRMED','COOKING','DONE','SERVED','PAID','CANCELLED') DEFAULT 'CREATED',
   `note` text DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `end_at` datetime DEFAULT NULL
@@ -156,7 +156,8 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `customer_name`, `table_number`, `staff_id`, `status`, `note`, `created_at`, `end_at`) VALUES
-(30, 'Mai Hảo', 2, 1, 'PAID', '', '2026-01-24 12:47:33', '2026-01-24 12:48:00');
+(30, 'Mai Hảo', 2, 1, 'PAID', '', '2026-01-24 12:47:33', '2026-01-24 12:48:00'),
+(31, 'Mai Hảo', 2, 1, 'SERVED', '', '2026-01-24 20:51:11', NULL);
 
 -- --------------------------------------------------------
 
@@ -170,7 +171,7 @@ CREATE TABLE `order_item` (
   `menu_item_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `status` enum('WAITING','COOKING','DONE') DEFAULT 'WAITING',
+  `status` enum('WAITING','COOKING','SERVED','DONE') DEFAULT 'WAITING',
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -180,36 +181,11 @@ CREATE TABLE `order_item` (
 
 INSERT INTO `order_item` (`id`, `order_id`, `menu_item_id`, `quantity`, `price`, `status`, `created_at`) VALUES
 (54, 30, 60, 3, 20000.00, 'DONE', '2026-01-24 12:47:33'),
-(55, 30, 17, 1, 169000.00, 'DONE', '2026-01-24 12:47:33');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `order_status_log`
---
-
-CREATE TABLE `order_status_log` (
-  `id` int(11) NOT NULL,
-  `order_item_id` int(11) NOT NULL,
-  `old_status` varchar(20) DEFAULT NULL,
-  `new_status` varchar(20) DEFAULT NULL,
-  `changed_by` int(11) DEFAULT NULL,
-  `changed_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `payment`
---
-
-CREATE TABLE `payment` (
-  `id` int(11) NOT NULL,
-  `invoice_id` int(11) DEFAULT NULL,
-  `method` enum('CASH','TRANSFER','QR') DEFAULT NULL,
-  `status` enum('PENDING','PAID') DEFAULT 'PENDING',
-  `paid_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+(55, 30, 17, 1, 169000.00, 'DONE', '2026-01-24 12:47:33'),
+(56, 31, 60, 2, 20000.00, 'SERVED', '2026-01-24 20:51:11'),
+(57, 31, 56, 1, 35000.00, 'SERVED', '2026-01-24 20:55:35'),
+(58, 31, 60, 1, 20000.00, 'SERVED', '2026-01-24 20:56:00'),
+(59, 31, 17, 1, 169000.00, 'SERVED', '2026-01-24 21:01:51');
 
 -- --------------------------------------------------------
 
@@ -280,21 +256,6 @@ ALTER TABLE `order_item`
   ADD KEY `menu_item_id` (`menu_item_id`);
 
 --
--- Indexes for table `order_status_log`
---
-ALTER TABLE `order_status_log`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_item_id` (`order_item_id`),
-  ADD KEY `changed_by` (`changed_by`);
-
---
--- Indexes for table `payment`
---
-ALTER TABLE `payment`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `invoice_id` (`invoice_id`);
-
---
 -- Indexes for table `staff`
 --
 ALTER TABLE `staff`
@@ -329,25 +290,13 @@ ALTER TABLE `menu_item`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `order_item`
 --
 ALTER TABLE `order_item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
-
---
--- AUTO_INCREMENT for table `order_status_log`
---
-ALTER TABLE `order_status_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `payment`
---
-ALTER TABLE `payment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `staff`
@@ -383,19 +332,6 @@ ALTER TABLE `orders`
 ALTER TABLE `order_item`
   ADD CONSTRAINT `order_item_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   ADD CONSTRAINT `order_item_ibfk_2` FOREIGN KEY (`menu_item_id`) REFERENCES `menu_item` (`id`);
-
---
--- Constraints for table `order_status_log`
---
-ALTER TABLE `order_status_log`
-  ADD CONSTRAINT `order_status_log_ibfk_1` FOREIGN KEY (`order_item_id`) REFERENCES `order_item` (`id`),
-  ADD CONSTRAINT `order_status_log_ibfk_2` FOREIGN KEY (`changed_by`) REFERENCES `staff` (`id`);
-
---
--- Constraints for table `payment`
---
-ALTER TABLE `payment`
-  ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoice` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
