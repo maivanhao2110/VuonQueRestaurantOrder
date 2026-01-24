@@ -14,6 +14,23 @@ class StaffRepository extends BaseRepository {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getPasswordHash($id) {
+        $query = "SELECT password_hash FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['password_hash'] : null;
+    }
+
+    public function updatePassword($id, $newHash) {
+        $query = "UPDATE " . $this->table_name . " SET password_hash = :hash WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':hash', $newHash);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
+
     public function getAll($includeInactive = true) {
         $query = "SELECT id, full_name, username, position, is_active, created_at, cccd, phone, email, address
                   FROM " . $this->table_name;

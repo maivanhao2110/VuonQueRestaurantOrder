@@ -48,22 +48,13 @@ class StaffController
                 Response::error('Vui lòng nhập tài khoản và mật khẩu');
             }
 
-            $staff = $this->staffService->findByUsername($username);
-
-            if (!$staff) {
-                Response::error('Tài khoản không tồn tại');
+            $result = $this->staffService->authenticate($username, $password);
+            
+            if ($result['success']) {
+                Response::success('Đăng nhập thành công', $result['data']);
+            } else {
+                Response::error($result['message']);
             }
-
-            if (!$staff['is_active']) {
-                Response::error('Tài khoản đã bị khóa');
-            }
-
-            if (!password_verify($password, $staff['password_hash'])) {
-                Response::error('Mật khẩu không đúng');
-            }
-
-            unset($staff['password_hash']);
-            Response::success('Đăng nhập thành công', $staff);
         } catch (Exception $e) {
             Response::error($e->getMessage());
         }
@@ -81,55 +72,11 @@ class StaffController
                 Response::error('Thiếu thông tin thay đổi mật khẩu');
             }
 
-            // Verify old password
-            // We need to fetch password hash again, StaffService.getStaff doesn't return password_hash usually?
-            // StaffRepository.getById returns all fields? 
-            // StaffRepository.getById returns "id, full_name, username, position, is_active, created_at, cccd, phone, email, address"
-            // It does NOT return password_hash. Use findByUsername or create getStaffAuth or verifyPassword in Service.
-            // But we have ID here.
-            
-            // Hack: Use direct DB or add getSecrets to Repo.
-            // Let's add verifyPassword to Service to be clean.
-            // Or just query raw here? No, refactoring.
-            // I'll leave this raw query for now as 'changePassword' is tricky with standard Repo that hides secrets.
-            // Or I can update StaffRepository to include password_hash in a specific method.
-            
-            // For now, I will keep the raw query for changePassword to ensure it works, 
-            // as modifying Repository again might be risky for just this one function.
-            // Actually, I can use the existing raw query which was working.
-            
-            $query = "SELECT password_hash FROM staff WHERE id = :id";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':id', $staffId);
-            $stmt->execute();
-            $staff = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$staff) Response::error('Không tìm thấy thông tin nhân viên');
-            if (!password_verify($oldPassword, $staff['password_hash'])) Response::error('Mật khẩu cũ không chính xác');
-            if ($oldPassword === $newPassword) Response::error('Mật khẩu mới không được trùng với mật khẩu cũ');
-
-            // Update using Service? Service updateStaff takes passwordPlainOrNull.
-            $this->staffService->updateStaff(
-                $staffId, 
-                '', // Fullname empty? Update requires fullname... 
-                // Service update method requires all fields: ($id, $fullName, $username, $position...)
-                // Result: The Service update method is designed for full update (PUT).
-                // So using raw query here is actually cleaner than fetching all data then sending it back.
-                // Unless I add patch/updatePassword to Service.
-                
-                // Let's stick with raw query for this specific action to minimize risk/complexity.
-                 '', 'STAFF', $newPassword // This will fail validation in service
-            );
-
-            // Reverting to raw query for update as well for safety.
-            $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
-            $query = "UPDATE staff SET password_hash = :password_hash WHERE id = :id";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':password_hash', $newPasswordHash);
-            $stmt->bindParam(':id', $staffId);
-
-            if ($stmt->execute()) Response::success('Đổi mật khẩu thành công');
-            else Response::error('Không thể cập nhật mật khẩu');
+            if ($this->staffService->changePassword($staffId, $oldPassword, $newPassword)) {
+                Response::success('Đổi mật khẩu thành công');
+            } else {
+                Response::error('Không thể cập nhật mật khẩu');
+            }
         } catch (Exception $e) {
             Response::error($e->getMessage());
         }

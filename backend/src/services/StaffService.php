@@ -45,5 +45,24 @@ class StaffService {
     public function toggleActive($id, $isActive) {
         return $this->staffRepo->setActive($id, $isActive);
     }
+
+    public function authenticate($username, $password) {
+        $staff = $this->staffRepo->findByUsername($username);
+        if (!$staff) return ['success' => false, 'message' => 'Tài khoản không tồn tại'];
+        if (!$staff['is_active']) return ['success' => false, 'message' => 'Tài khoản đã bị khóa'];
+        if (!password_verify($password, $staff['password_hash'])) return ['success' => false, 'message' => 'Mật khẩu không đúng'];
+        
+        unset($staff['password_hash']);
+        return ['success' => true, 'data' => $staff];
+    }
+
+    public function changePassword($staffId, $oldPassword, $newPassword) {
+        $hash = $this->staffRepo->getPasswordHash($staffId);
+        if (!$hash) throw new Exception('Không tìm thấy thông tin nhân viên');
+        
+        if (!password_verify($oldPassword, $hash)) throw new Exception('Mật khẩu cũ không chính xác');
+        if ($oldPassword === $newPassword) throw new Exception('Mật khẩu mới không được trùng với mật khẩu cũ');
+
+        return $this->staffRepo->updatePassword($staffId, password_hash($newPassword, PASSWORD_DEFAULT));
+    }
 }
-?>
