@@ -12,7 +12,7 @@ class Staff {
     }
 
     public function getAll($includeInactive = true) {
-        $query = "SELECT id, full_name, username, is_active, created_at, cccd, phone, email, address
+        $query = "SELECT id, full_name, username, position, is_active, created_at, cccd, phone, email, address
                   FROM " . $this->table_name;
 
         if (!$includeInactive) {
@@ -27,7 +27,7 @@ class Staff {
     }
 
     public function getById($id) {
-        $query = "SELECT id, full_name, username, is_active, created_at, cccd, phone, email, address
+        $query = "SELECT id, full_name, username, position, is_active, created_at, cccd, phone, email, address
                   FROM " . $this->table_name . "
                   WHERE id = :id";
         $stmt = $this->conn->prepare($query);
@@ -36,15 +36,16 @@ class Staff {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function create($fullName, $username, $passwordHash, $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
+    public function create($fullName, $username, $passwordHash, $position, $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
         $query = "INSERT INTO " . $this->table_name . "
-                  (full_name, username, password_hash, is_active, created_at, cccd, phone, email, address)
-                  VALUES (:full_name, :username, :password_hash, :is_active, NOW(), :cccd, :phone, :email, :address)";
+                  (full_name, username, password_hash, position, is_active, created_at, cccd, phone, email, address)
+                  VALUES (:full_name, :username, :password_hash, :position, :is_active, NOW(), :cccd, :phone, :email, :address)";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':full_name', $fullName);
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':password_hash', $passwordHash);
+        $stmt->bindParam(':position', $position);
         $stmt->bindParam(':is_active', $isActive);
         $stmt->bindParam(':cccd', $cccd);
         $stmt->bindParam(':phone', $phone);
@@ -58,7 +59,7 @@ class Staff {
         return false;
     }
 
-    public function update($id, $fullName, $username, $passwordHashOrNull, $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
+    public function update($id, $fullName, $username, $position, $passwordHashOrNull, $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
         $setPasswordSql = "";
         if ($passwordHashOrNull !== null) {
             $setPasswordSql = ", password_hash = :password_hash";
@@ -67,6 +68,7 @@ class Staff {
         $query = "UPDATE " . $this->table_name . "
                   SET full_name = :full_name,
                       username = :username,
+                      position = :position,
                       is_active = :is_active,
                       cccd = :cccd,
                       phone = :phone,
@@ -79,6 +81,7 @@ class Staff {
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':full_name', $fullName);
         $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':position', $position);
         $stmt->bindParam(':is_active', $isActive);
         $stmt->bindParam(':cccd', $cccd);
         $stmt->bindParam(':phone', $phone);
@@ -97,6 +100,13 @@ class Staff {
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':is_active', $isActive);
+        return $stmt->execute();
+    }
+
+    public function delete($id) {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
 }

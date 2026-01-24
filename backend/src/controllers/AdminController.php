@@ -87,10 +87,29 @@ class AdminController {
 		try {
 			$ok = $this->menuService->deleteCategory($id);
 			if (!$ok) {
-				Response::error('Không thể xóa danh mục');
+				Response::error('Không thể xóa danh mục (có thể đang chứa món ăn?)');
 			}
 			Response::success('Xóa danh mục thành công');
 		} catch (Exception $e) {
+			Response::error($e->getMessage());
+		}
+	}
+
+	public function toggleCategoryStatus($id) {
+		try {
+			$data = $this->getJsonBody();
+			// Debug logging
+			file_put_contents(__DIR__ . '/../../debug_admin_cat.log', date('Y-m-d H:i:s') . " - Toggle Cat $id: " . json_encode($data) . "\n", FILE_APPEND);
+			
+			$isActive = isset($data['is_active']) ? (int)$data['is_active'] : 0;
+			
+			$ok = $this->menuService->toggleCategoryStatus($id, $isActive);
+			if (!$ok) Response::error('Không thể thay đổi trạng thái');
+			
+			$status = $isActive ? 'Mở khóa' : 'Khóa';
+			Response::success("$status danh mục thành công");
+		} catch (Exception $e) {
+            file_put_contents(__DIR__ . '/../../debug_admin_cat_error.log', $e->getMessage() . "\n", FILE_APPEND);
 			Response::error($e->getMessage());
 		}
 	}
@@ -215,14 +234,15 @@ class AdminController {
 				if ($fullName === '') Response::error('Họ tên không được để trống');
 				if ($username === '') Response::error('Username không được để trống');
 				if ($password === '') Response::error('Password không được để trống');
-
+				
+				$position = $data['position'] ?? 'STAFF';
 				$cccd = $data['cccd'] ?? null;
 				$phone = $data['phone'] ?? null;
 				$email = $data['email'] ?? null;
 				$address = $data['address'] ?? null;
 				$isActive = isset($data['is_active']) ? (int)$data['is_active'] : 1;
 
-				$id = $this->staffService->createStaff($fullName, $username, $password, $cccd, $phone, $email, $address, $isActive);
+				$id = $this->staffService->createStaff($fullName, $username, $password, $position, $cccd, $phone, $email, $address, $isActive);
 				if (!$id) Response::error('Không thể tạo nhân viên');
 
 				$created = $this->staffService->getStaff($id);
@@ -248,14 +268,15 @@ class AdminController {
 
 				if ($fullName === '') Response::error('Họ tên không được để trống');
 				if ($username === '') Response::error('Username không được để trống');
-
+				
+				$position = $data['position'] ?? 'STAFF';
 				$cccd = $data['cccd'] ?? null;
 				$phone = $data['phone'] ?? null;
 				$email = $data['email'] ?? null;
 				$address = $data['address'] ?? null;
 				$isActive = isset($data['is_active']) ? (int)$data['is_active'] : 1;
 
-				$ok = $this->staffService->updateStaff($id, $fullName, $username, $password, $cccd, $phone, $email, $address, $isActive);
+				$ok = $this->staffService->updateStaff($id, $fullName, $username, $position, $password, $cccd, $phone, $email, $address, $isActive);
 				if (!$ok) Response::error('Không thể cập nhật nhân viên');
 
 				$updated = $this->staffService->getStaff($id);
@@ -275,6 +296,21 @@ class AdminController {
 				$ok = $this->staffService->deleteStaff($id);
 				if (!$ok) Response::error('Không thể xóa nhân viên');
 				Response::success('Xóa nhân viên thành công');
+			} catch (Exception $e) {
+				Response::error($e->getMessage());
+			}
+		}
+		
+		public function toggleStaffStatus($id) {
+			try {
+				$data = $this->getJsonBody();
+				$isActive = isset($data['is_active']) ? (int)$data['is_active'] : 0;
+				
+				$ok = $this->staffService->toggleActive($id, $isActive);
+				if (!$ok) Response::error('Không thể thay đổi trạng thái');
+				
+				$status = $isActive ? 'Mở khóa' : 'Khóa';
+				Response::success("$status nhân viên thành công");
 			} catch (Exception $e) {
 				Response::error($e->getMessage());
 			}

@@ -22,7 +22,18 @@ $db = $database->getConnection();
 
 $controller = new AdminController($db);
 $requestMethod = $_SERVER['REQUEST_METHOD'];
-$path = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/';
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// Extract path starting from /api/admin
+$marker = '/api/admin';
+$pos = strpos($requestUri, $marker);
+
+if ($pos !== false) {
+    $path = substr($requestUri, $pos);
+} else {
+    $path = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/';
+}
+// Debug Router
+file_put_contents(__DIR__ . '/debug_router.log', date('Y-m-d H:i:s') . " - Method: $requestMethod - Path: $path\n", FILE_APPEND);
 
 switch ($path) {
 	// Category
@@ -77,7 +88,14 @@ switch ($path) {
 		break;
 
 	default:
-		if (preg_match('#^/api/admin/categories/(\d+)$#', $path, $matches)) {
+		if (preg_match('#^/api/admin/categories/(\d+)/status$#', $path, $matches)) {
+			$id = $matches[1];
+			if ($requestMethod === 'POST') {
+				$controller->toggleCategoryStatus($id);
+			} else {
+				Response::error('Method not allowed');
+			}
+		} elseif (preg_match('#^/api/admin/categories/(\d+)$#', $path, $matches)) {
 			$id = $matches[1];
 			if ($requestMethod === 'PUT') {
 				$controller->updateCategory($id);
@@ -94,6 +112,14 @@ switch ($path) {
 				$controller->updateMenuItem($id);
 			} elseif ($requestMethod === 'DELETE') {
 				$controller->deleteMenuItem($id);
+			} else {
+				Response::error('Method not allowed');
+			}
+
+		} elseif (preg_match('#^/api/admin/staff/(\d+)/status$#', $path, $matches)) {
+			$id = $matches[1];
+			if ($requestMethod === 'PUT') {
+				$controller->toggleStaffStatus($id);
 			} else {
 				Response::error('Method not allowed');
 			}

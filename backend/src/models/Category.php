@@ -92,7 +92,13 @@ class Category {
         $query = "UPDATE " . $this->table_name . " SET is_active = :is_active WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':is_active', $isActive);
+        $stmt->bindValue(':is_active', $isActive, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+    public function delete($id) {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
 }

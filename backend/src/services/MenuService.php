@@ -36,8 +36,11 @@ class MenuService {
     }
 
     public function deleteCategory($id) {
-        // Soft delete
-        return $this->categoryModel->setActive($id, 0);
+        return $this->categoryModel->delete($id);
+    }
+
+    public function toggleCategoryStatus($id, $isActive) {
+        return $this->categoryModel->setActive($id, $isActive);
     }
 
     public function getMenuItems($categoryId = null) {

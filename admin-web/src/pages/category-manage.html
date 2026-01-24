@@ -79,7 +79,7 @@
                                 <th>ID</th>
                                 <th>Tên danh mục</th>
                                 <th>Mô tả</th>
-                                <th>Thứ tự</th>
+                                <th>Trạng thái</th>
                                 <th style="text-align: right;">Hành động</th>
                             </tr>
                         </thead>
@@ -101,10 +101,7 @@
                             <label>Mô tả</label>
                             <input type="text" id="category-description" placeholder="Mô tả ngắn gọn về danh mục">
                         </div>
-                        <div class="form-group">
-                            <label>Thứ tự hiển thị</label>
-                            <input type="number" id="category-sort" value="0">
-                        </div>
+
                         <div style="display: flex; gap: 12px; margin-top: 20px;">
                             <button class="btn btn-primary" onclick="saveCategory()">Lưu lại</button>
                             <button class="btn" style="background: var(--color-neutral-200);"
@@ -116,28 +113,57 @@
         </main>
     </div>
 
-    <script src="../services/admin-api.js"></script>
+    <script src="../services/admin-api.js?v=2"></script>
     <script>
         function fetchCategories() {
             adminApi.getCategories().then(data => {
                 const tbody = document.querySelector('#category-table tbody');
                 tbody.innerHTML = '';
 
+                // Sort active first
+                data.sort((a, b) => b.is_active - a.is_active);
+
                 data.forEach(cat => {
+                    const isActive = cat.is_active == 1;
+                    const toggleBtn = isActive
+                        ? `<button class="btn" style="padding: 6px 12px; background: #fff7ed; color: #c2410c; margin-right: 8px;" onclick="toggleStatus(${cat.id}, 0)" title="Ẩn danh mục">Ẩn</button>`
+                        : `<button class="btn" style="padding: 6px 12px; background: #ecfdf5; color: #047857; margin-right: 8px;" onclick="toggleStatus(${cat.id}, 1)" title="Hiện danh mục">Hiện</button>`;
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${cat.id}</td>
                         <td><strong>${cat.name}</strong></td>
                         <td>${cat.description || ''}</td>
-                        <td>${cat.is_active ? '<span class="status-active">Hoạt động</span>' : 'Ẩn'}</td>
-                        <td class="actions">
-                            <button class="btn btn-secondary" onclick="editCategory(${cat.id}, '${cat.name}', '${cat.description || ''}', ${cat.is_active})">Sửa</button>
+                        <td><span style="color: ${isActive ? 'var(--color-primary-600)' : '#ef4444'}; font-weight: 600;">${isActive ? 'Hoạt động' : 'Đã ẩn'}</span></td>
+                        <td class="actions" style="white-space: nowrap;">
+                            ${toggleBtn}
+                            <button class="btn btn-secondary" style="margin-right: 8px;" onclick="editCategory(${cat.id}, '${cat.name}', '${cat.description || ''}', ${cat.is_active})">Sửa</button>
                             <button class="btn btn-danger" onclick="deleteCategory(${cat.id})">Xóa</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
             });
+        }
+
+        function toggleStatus(id, newStatus) {
+            const action = newStatus === 1 ? 'hiện' : 'ẩn';
+            if (confirm(`Bạn có chắc muốn ${action} danh mục này?`)) {
+                try {
+                    adminApi.toggleCategoryStatus(id, newStatus).then(res => {
+                        if (res.success) {
+                            fetchCategories();
+                        } else {
+                            alert('Lỗi: ' + res.message);
+                        }
+                    }).catch(error => {
+                        alert('Lỗi kết nối: ' + error.message);
+                        console.error(error);
+                    });
+                } catch (e) {
+                    alert('Lỗi hệ thống: ' + e.message);
+                }
+            }
         }
 
         function showAddForm() {
@@ -185,8 +211,23 @@
         }
 
         function deleteCategory(id) {
-            if (!confirm('Bạn có chắc muốn xóa danh mục này?')) return;
-            adminApi.deleteCategory(id).then(fetchCategories);
+            if (!confirm('CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn danh mục này và có thể ảnh hưởng đến các món ăn thuộc danh mục.\nBạn có chắc chắn muốn xóa?')) return;
+
+            try {
+                adminApi.deleteCategory(id).then(res => {
+                    if (res.success) {
+                        fetchCategories();
+                        alert('Xóa danh mục thành công!');
+                    } else {
+                        alert('Không thể xóa: ' + res.message);
+                    }
+                }).catch(error => {
+                    alert('Lỗi kết nối: ' + error.message);
+                    console.error(error);
+                });
+            } catch (e) {
+                alert('Lỗi hệ thống: ' + e.message);
+            }
         }
 
         // Initial load

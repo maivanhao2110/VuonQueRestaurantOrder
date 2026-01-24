@@ -20,22 +20,27 @@ class StaffService {
         return $this->staffModel->getById($id);
     }
 
-    public function createStaff($fullName, $username, $passwordPlain, $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
+    public function createStaff($fullName, $username, $passwordPlain, $position = 'STAFF', $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
         $passwordHash = password_hash($passwordPlain, PASSWORD_DEFAULT);
-        return $this->staffModel->create($fullName, $username, $passwordHash, $cccd, $phone, $email, $address, $isActive);
+        return $this->staffModel->create($fullName, $username, $passwordHash, $position, $cccd, $phone, $email, $address, $isActive);
     }
 
-    public function updateStaff($id, $fullName, $username, $passwordPlainOrNull, $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
+    public function updateStaff($id, $fullName, $username, $position, $passwordPlainOrNull, $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
         $passwordHashOrNull = null;
         if ($passwordPlainOrNull !== null && $passwordPlainOrNull !== '') {
             $passwordHashOrNull = password_hash($passwordPlainOrNull, PASSWORD_DEFAULT);
         }
 
-        return $this->staffModel->update($id, $fullName, $username, $passwordHashOrNull, $cccd, $phone, $email, $address, $isActive);
+        return $this->staffModel->update($id, $fullName, $username, $position, $passwordHashOrNull, $cccd, $phone, $email, $address, $isActive);
     }
 
+    // Old deleteStaff was locking, now we make it hard delete as requested
     public function deleteStaff($id) {
-        return $this->staffModel->setActive($id, 0);
+        return $this->staffModel->delete($id);
+    }
+
+    public function toggleActive($id, $isActive) {
+        return $this->staffModel->setActive($id, $isActive);
     }
 }
 

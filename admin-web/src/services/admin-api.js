@@ -2,7 +2,7 @@ const BASE_URL = '/VuonQueRestaurantOrder/backend/src/public/index.php/api/admin
 
 const adminApi = {
     // Categories
-    getCategories: () => fetch(`${BASE_URL}/categories`).then(r => r.json()).then(r => r.data),
+    getCategories: () => fetch(`${BASE_URL}/categories?_t=${Date.now()}`).then(r => r.json()).then(r => r.data),
     createCategory: (data) => fetch(`${BASE_URL}/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -15,6 +15,11 @@ const adminApi = {
     }).then(r => r.json()),
     deleteCategory: (id) => fetch(`${BASE_URL}/categories/${id}`, {
         method: 'DELETE'
+    }).then(r => r.json()),
+    toggleCategoryStatus: (id, isActive) => fetch(`${BASE_URL}/categories/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: isActive })
     }).then(r => r.json()),
 
     // Menu Items
@@ -47,6 +52,11 @@ const adminApi = {
     }).then(r => r.json()),
     deleteStaff: (id) => fetch(`${BASE_URL}/staff/${id}`, {
         method: 'DELETE'
+    }).then(r => r.json()),
+    toggleStaffStatus: (id, isActive) => fetch(`${BASE_URL}/staff/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: isActive })
     }).then(r => r.json()),
 
     // Invoices
