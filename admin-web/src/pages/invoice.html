@@ -46,9 +46,10 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Bàn</th>
+                                <th>Khách hàng</th>
+                                <th>Thanh toán</th>
                                 <th>Tổng tiền</th>
                                 <th>Ngày tạo</th>
-                                <th>Trạng thái</th>
                                 <th style="text-align: right;">Hành động</th>
                             </tr>
                         </thead>
@@ -68,13 +69,15 @@
                 const tbody = document.querySelector('#invoice-table tbody');
                 tbody.innerHTML = '';
                 data.forEach(inv => {
+                    const paymentMethod = inv.type_payment === 'CAST' ? 'Tiền mặt' : (inv.type_payment === 'BANK' ? 'Chuyển khoản' : inv.type_payment);
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                 <td>${inv.id}</td>
                 <td>${inv.table_number || ''}</td>
-                <td>${new Intl.NumberFormat('vi-VN').format(inv.total_amount)} ₫</td>
+                <td>${inv.customer_name || 'Khách vãng lai'}</td>
+                <td><span class="status-active" style="background:${inv.type_payment === 'CAST' ? '#dcfce7' : '#dbeafe'}; color:${inv.type_payment === 'CAST' ? '#166534' : '#1e40af'}">${paymentMethod}</span></td>
+                <td style="font-weight:600;">${new Intl.NumberFormat('vi-VN').format(inv.total_amount)} ₫</td>
                 <td>${inv.created_at}</td>
-                <td><span class="status-active">${inv.status}</span></td>
                 <td style="text-align: right;">
                     <button class="btn btn-secondary" onclick="viewInvoice(${inv.id})">Chi tiết</button>
                 </td>`;
@@ -84,19 +87,25 @@
         }
         function viewInvoice(id) {
             adminApi.getInvoiceDetail(id).then(inv => {
+                const paymentMethod = inv.type_payment === 'CAST' ? 'Tiền mặt' : (inv.type_payment === 'BANK' ? 'Chuyển khoản' : inv.type_payment);
                 let html = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                 <h2 style="margin: 0;">Chi tiết hóa đơn #${inv.id}</h2>
                 <button class="btn" onclick="document.getElementById('invoice-detail').style.display='none'">Đóng</button>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; background: white; padding: 20px; border-radius: 8px;">
                 <div>
+                    <h4 style="margin-top:0; color:#666;">Thông tin đơn hàng</h4>
                     <p><strong>Bàn:</strong> ${inv.table_number || 'N/A'}</p>
-                    <p><strong>Ngày tạo:</strong> ${inv.created_at}</p>
+                    <p><strong>Khách hàng:</strong> ${inv.customer_name || 'Khách vãng lai'}</p>
+                    <p><strong>Nhân viên:</strong> ${inv.staff_name || 'N/A'}</p>
+                    <p><strong>Ghi chú:</strong> ${inv.note || 'Không có'}</p>
                 </div>
                 <div>
-                    <p><strong>Trạng thái:</strong> ${inv.status}</p>
-                    <p><strong>Tổng tiền:</strong> <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-600);">${new Intl.NumberFormat('vi-VN').format(inv.total_amount)} ₫</span></p>
+                    <h4 style="margin-top:0; color:#666;">Thông tin thanh toán</h4>
+                    <p><strong>Ngày tạo:</strong> ${inv.created_at}</p>
+                    <p><strong>Phương thức:</strong> ${paymentMethod}</p>
+                    <p><strong>Tổng tiền:</strong> <span style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary-600);">${new Intl.NumberFormat('vi-VN').format(inv.total_amount)} ₫</span></p>
                 </div>
             </div>
             <table class="admin-table">

@@ -32,9 +32,10 @@ class Invoice
 
     public function getAll()
     {
-        $query = "SELECT i.*, o.table_number 
+        $query = "SELECT i.*, o.table_number, o.customer_name, o.note, s.full_name as staff_name
                   FROM " . $this->table_name . " i
                   LEFT JOIN orders o ON i.order_id = o.id
+                  LEFT JOIN staff s ON o.staff_id = s.id
                   ORDER BY i.created_at DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -43,9 +44,10 @@ class Invoice
 
     public function getById($id)
     {
-        $query = "SELECT i.*, o.table_number 
+        $query = "SELECT i.*, o.table_number, o.customer_name, o.note, s.full_name as staff_name
                   FROM " . $this->table_name . " i
                   LEFT JOIN orders o ON i.order_id = o.id
+                  LEFT JOIN staff s ON o.staff_id = s.id
                   WHERE i.id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([':id' => $id]);
