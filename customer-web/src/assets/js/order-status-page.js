@@ -49,19 +49,17 @@ function updateNavigationLinks(tableNumber) {
 async function loadOrders() {
     try {
         const orders = await getTableOrders();
-        
+
         // Separate active and completed orders
-        const activeOrders = orders.filter(order => 
+        const activeOrders = orders.filter(order =>
             order.status !== 'DONE' && order.status !== 'CANCELLED'
         );
-        
-        const completedOrders = orders.filter(order =>
-            order.status === 'DONE' || order.status === 'CANCELLED'
-        );
+
+
 
         // Render
         renderOrders(activeOrders, 'activeOrders');
-        renderOrders(completedOrders, 'orderHistory');
+
     } catch (error) {
         console.error('Load orders error:', error);
     }
@@ -72,7 +70,7 @@ async function loadOrders() {
  */
 function renderOrders(orders, containerId) {
     const container = document.getElementById(containerId);
-    
+
     if (orders.length === 0) {
         container.innerHTML = `
             <div class="orders-empty">

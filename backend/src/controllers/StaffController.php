@@ -358,7 +358,7 @@ class StaffController
                     } else {
                         // Ensure order is in COOKING status if not already
                         $order = $this->orderModel->getById($orderId);
-                        if ($order && $order['status'] !== 'COOKING' && $order['status'] !== 'CONFIRMED') {
+                        if ($order && $order['status'] !== 'COOKING') {
                             $this->orderModel->updateStatus($orderId, 'COOKING');
                         }
                     }

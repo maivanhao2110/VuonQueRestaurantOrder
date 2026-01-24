@@ -83,10 +83,7 @@ class Order
         $query = "UPDATE " . $this->table_name . " 
                   SET status = :status";
 
-        // Auto set end_at when order is DONE
-        if ($status === 'DONE') {
-            $query .= ", end_at = NOW()";
-        }
+
 
         if ($staffId !== null) {
             $query .= ", staff_id = :staff_id";
