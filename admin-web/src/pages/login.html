@@ -33,7 +33,7 @@
     <script>
         // Check if already logged in
         if (authApi.getUser()) {
-            window.location.href = '../index.html';
+            window.location.href = 'index.html';
         }
 
         const loginForm = document.getElementById('loginForm');
@@ -60,7 +60,7 @@
                     // Check Role (Frontend Guard)
                     if (['ADMIN', 'MANAGE'].includes(user.position)) {
                         authApi.saveUser(user);
-                        window.location.href = '../index.html';
+                        window.location.href = 'index.html';
                     } else {
                         showError('Bạn không có quyền truy cập (Chỉ dành cho Quản lý/Admin)');
                     }

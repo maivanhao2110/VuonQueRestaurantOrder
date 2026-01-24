@@ -44,15 +44,15 @@ class StatictisService {
 		}
 
 		// Invoices & payments
+		// Invoices & payments
 		$stmt = $this->db->prepare(
 			"SELECT
-				COUNT(i.id) AS invoices_total,
-				SUM(CASE WHEN p.status = 'PAID' THEN 1 ELSE 0 END) AS invoices_paid,
-				SUM(CASE WHEN p.status = 'PENDING' OR p.status IS NULL THEN 1 ELSE 0 END) AS invoices_pending,
-				COALESCE(SUM(CASE WHEN p.status = 'PAID' THEN i.total_amount ELSE 0 END), 0) AS revenue_paid
-			 FROM invoice i
-			 LEFT JOIN payment p ON p.invoice_id = i.id
-			 WHERE i.created_at BETWEEN :from_dt AND :to_dt"
+				COUNT(id) AS invoices_total,
+				COUNT(id) AS invoices_paid,
+				0 AS invoices_pending,
+				COALESCE(SUM(total_amount), 0) AS revenue_paid
+			 FROM invoice
+			 WHERE created_at BETWEEN :from_dt AND :to_dt"
 		);
 		$stmt->execute([':from_dt' => $fromDt, ':to_dt' => $toDt]);
 		$inv = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];

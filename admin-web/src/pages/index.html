@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Vườn Quê Admin</title>
-    <script src="services/auth-check.js"></script>
-    <link rel="stylesheet" href="assets/css/MenuManage.css">
+    <script src="../services/auth-check.js"></script>
+    <link rel="stylesheet" href="../assets/css/MenuManage.css">
 </head>
 
 <body>
@@ -25,27 +25,27 @@
                     </a>
                 </li>
                 <li>
-                    <a href="pages/menu-manage.html">
+                    <a href="menu-manage.html">
                         <span class="icon">📋</span> Quản lý Menu
                     </a>
                 </li>
                 <li>
-                    <a href="pages/category-manage.html">
+                    <a href="category-manage.html">
                         <span class="icon">📂</span> Quản lý Danh mục
                     </a>
                 </li>
                 <li>
-                    <a href="pages/staff-manage.html">
+                    <a href="staff-manage.html">
                         <span class="icon">👥</span> Quản lý Nhân viên
                     </a>
                 </li>
                 <li>
-                    <a href="pages/invoice.html">
+                    <a href="invoice.html">
                         <span class="icon">🧾</span> Hóa đơn & Thanh toán
                     </a>
                 </li>
                 <li>
-                    <a href="pages/statistic.html">
+                    <a href="statistic.html">
                         <span class="icon">📊</span> Báo cáo Thống kê
                     </a>
                 </li>
@@ -59,9 +59,18 @@
         <main class="main-content">
             <header class="top-header">
                 <h1 class="page-title">Bảng điều khiển</h1>
-                <div class="user-profile">
-                    <span class="user-name">Quản trị viên</span>
+                <div class="user-profile" onclick="toggleProfileDropdown()"
+                    style="cursor: pointer; position: relative;">
+                    <span class="user-name" id="adminName">Quản trị viên</span>
                     <div class="avatar">A</div>
+
+                    <div class="dropdown-content" id="profileDropdown"
+                        style="display: none; position: absolute; right: 0; top: 100%; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; padding: 8px 0; min-width: 150px; z-index: 100;">
+                        <a href="#" onclick="logout(event)"
+                            style="display: flex; align-items: center; padding: 10px 16px; color: #ef4444; text-decoration: none; transition: background 0.1s;">
+                            <span style="margin-right: 8px;">🚪</span> Đăng xuất
+                        </a>
+                    </div>
                 </div>
             </header>
 
@@ -76,28 +85,28 @@
                         <div class="card-icon">📋</div>
                         <h3>Quản lý Menu</h3>
                         <p>Tùy chỉnh danh sách món ăn, giá cả và trạng thái còn món.</p>
-                        <a href="pages/menu-manage.html" class="card-action">Quản lý ngay &rarr;</a>
+                        <a href="menu-manage.html" class="card-action">Quản lý ngay &rarr;</a>
                     </div>
 
                     <div class="card">
                         <div class="card-icon">👥</div>
                         <h3>Nhân viên</h3>
                         <p>Xử lý thông tin nhân sự, phân quyền truy cập hệ thống.</p>
-                        <a href="pages/staff-manage.html" class="card-action">Chi tiết &rarr;</a>
+                        <a href="staff-manage.html" class="card-action">Chi tiết &rarr;</a>
                     </div>
 
                     <div class="card">
                         <div class="card-icon">🧾</div>
                         <h3>Giao dịch</h3>
                         <p>Tổng hợp các hóa đơn và lịch sử thanh toán từ khách hàng.</p>
-                        <a href="pages/invoice.html" class="card-action">Xem hóa đơn &rarr;</a>
+                        <a href="invoice.html" class="card-action">Xem hóa đơn &rarr;</a>
                     </div>
 
                     <div class="card">
                         <div class="card-icon">📊</div>
                         <h3>Thống kê</h3>
                         <p>Báo cáo doanh thu và phân tích hiệu quả kinh doanh.</p>
-                        <a href="pages/statistic.html" class="card-action">Xem báo cáo &rarr;</a>
+                        <a href="statistic.html" class="card-action">Xem báo cáo &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -152,7 +161,7 @@
             }
         }
     </style>
-    <script src="services/admin-api.js"></script>
+    <script src="../services/admin-api.js"></script>
     <script>
         let topDishesChart = null;
 
@@ -309,6 +318,41 @@
                 }
             });
         }
+
+        // Load admin name
+        document.addEventListener('DOMContentLoaded', () => {
+            const userJson = localStorage.getItem('admin_user');
+            if (userJson) {
+                const user = JSON.parse(userJson);
+                const nameEl = document.getElementById('adminName');
+                if (nameEl && user.full_name) nameEl.textContent = user.full_name;
+            }
+        });
+
+        // Auth & UI Helpers - Moved outside of DOMContentLoaded
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function logout(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            localStorage.removeItem('admin_user');
+            window.location.href = 'login.html';
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-profile')) {
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown) dropdown.style.display = 'none';
+            }
+        });
     </script>
 </body>
 

@@ -13,10 +13,10 @@
     <div class="admin-layout">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <a href="../index.html" class="brand"><span>🍽️</span> Vườn Quê Admin</a>
+                <a href="index.html" class="brand"><span>🍽️</span> Vườn Quê Admin</a>
             </div>
             <ul class="sidebar-menu">
-                <li><a href="../index.html"><span class="icon">🏠</span> Tổng quan</a></li>
+                <li><a href="index.html"><span class="icon">🏠</span> Tổng quan</a></li>
                 <li><a href="menu-manage.html"><span class="icon">📋</span> Quản lý Menu</a></li>
                 <li><a href="category-manage.html"><span class="icon">📂</span> Quản lý Danh mục</a></li>
                 <li><a href="staff-manage.html" class="active"><span class="icon">👥</span> Quản lý Nhân viên</a></li>
@@ -29,8 +29,18 @@
         <main class="main-content">
             <header class="top-header">
                 <h1 class="page-title">Quản lý nhân viên</h1>
-                <div class="user-profile"><span class="user-name">Quản trị viên</span>
+                <div class="user-profile" onclick="toggleProfileDropdown()"
+                    style="cursor: pointer; position: relative;">
+                    <span class="user-name" id="adminName">Quản trị viên</span>
                     <div class="avatar">A</div>
+
+                    <div class="dropdown-content" id="profileDropdown"
+                        style="display: none; position: absolute; right: 0; top: 100%; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; padding: 8px 0; min-width: 150px; z-index: 100;">
+                        <a href="#" onclick="logout(event)"
+                            style="display: flex; align-items: center; padding: 10px 16px; color: #ef4444; text-decoration: none; transition: background 0.1s;">
+                            <span style="margin-right: 8px;">🚪</span> Đăng xuất
+                        </a>
+                    </div>
                 </div>
             </header>
 
@@ -73,7 +83,7 @@
                             <select id="position"
                                 style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
                                 <option value="STAFF">Nhân viên</option>
-                                <option value="MANAGER">Quản lý</option>
+                                <option value="MANAGE">Quản lý</option>
                             </select>
                         </div>
                         <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
@@ -101,6 +111,7 @@
                 // Security Filter: Only ADMIN can see other ADMINs
                 const currentUser = authApi.getUser();
                 if (currentUser && currentUser.position !== 'ADMIN') {
+                    // Filter out any staff with position 'ADMIN'
                     data = data.filter(item => item.position !== 'ADMIN');
                 }
 
@@ -114,9 +125,11 @@
                     const isActive = item.is_active == 1;
                     const tr = document.createElement('tr');
 
+                    // Normalize position for check
+                    const pos = (item.position || '').toUpperCase();
                     let roleDisplay = 'Nhân viên';
-                    if (item.position === 'ADMIN') roleDisplay = 'Quản trị viên';
-                    else if (item.position === 'MANAGE') roleDisplay = 'Quản lý';
+                    if (pos === 'ADMIN') roleDisplay = 'Quản trị viên';
+                    else if (pos === 'MANAGE' || pos === 'MANAGER') roleDisplay = 'Quản lý';
 
                     // Action Buttons: View | Edit | Lock/Unlock | Delete
                     const lockBtn = isActive
@@ -143,9 +156,10 @@
 
         function viewStaff(id) {
             adminApi.getStaff(id).then(item => {
+                const pos = (item.position || '').toUpperCase();
                 let roleDisplay = 'Nhân viên';
-                if (item.position === 'ADMIN') roleDisplay = 'Quản trị viên';
-                else if (item.position === 'MANAGE') roleDisplay = 'Quản lý';
+                if (pos === 'ADMIN') roleDisplay = 'Quản trị viên';
+                else if (pos === 'MANAGE' || pos === 'MANAGER') roleDisplay = 'Quản lý';
 
                 const info = `
                     <p><strong>Họ tên:</strong> ${item.full_name}</p>
@@ -208,6 +222,7 @@
         }
         function renderPositionOptions(selectedPosition = 'STAFF') {
             const currentUser = authApi.getUser();
+            const currentPos = (currentUser && currentUser.position) ? currentUser.position.toUpperCase() : '';
             const select = document.getElementById('position');
             select.innerHTML = ''; // Clear current options
 
@@ -215,7 +230,7 @@
             const opts = [{ value: 'STAFF', label: 'Nhân viên' }];
 
             // Only ADMIN can create/assign MANAGE role
-            if (currentUser && currentUser.position === 'ADMIN') {
+            if (currentPos === 'ADMIN') {
                 opts.push({ value: 'MANAGE', label: 'Quản lý' });
             }
 
@@ -297,40 +312,38 @@
 
         // ... existing functions ...
 
-        // User Profile & Dropdown Logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const user = authApi.getUser();
-            if (user) {
-                const nameEl = document.querySelector('.user-name');
-                const avatarEl = document.querySelector('.avatar');
-                if (nameEl) nameEl.textContent = user.full_name;
-                if (avatarEl) avatarEl.textContent = user.full_name.charAt(0).toUpperCase();
+        // Auth & UI Helpers
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
             }
+        }
 
-            // Profile Click
-            const profile = document.querySelector('.user-profile');
-            if (profile) {
-                profile.style.cursor = 'pointer';
-                profile.style.position = 'relative';
+        function logout(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            localStorage.removeItem('admin_user');
+            window.location.href = 'login.html';
+        }
 
-                // Create Dropdown
-                const dropdown = document.createElement('div');
-                dropdown.className = 'profile-dropdown';
-                dropdown.innerHTML = `
-                    <div class="dropdown-item" onclick="authApi.logout()">
-                        <span style="font-size: 1.2em">🚪</span> Đăng xuất
-                    </div>
-                `;
-                profile.appendChild(dropdown);
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-profile')) {
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown) dropdown.style.display = 'none';
+            }
+        });
 
-                profile.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    dropdown.classList.toggle('show');
-                });
-
-                document.addEventListener('click', () => {
-                    dropdown.classList.remove('show');
-                });
+        // Load admin name
+        document.addEventListener('DOMContentLoaded', () => {
+            const userJson = localStorage.getItem('admin_user');
+            if (userJson) {
+                const user = JSON.parse(userJson);
+                const nameEl = document.getElementById('adminName');
+                if (nameEl && user.full_name) nameEl.textContent = user.full_name;
             }
         });
 

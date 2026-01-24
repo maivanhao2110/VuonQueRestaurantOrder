@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 24, 2026 at 06:32 AM
+-- Generation Time: Jan 24, 2026 at 07:33 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -58,6 +58,13 @@ CREATE TABLE `invoice` (
   `type_payment` enum('CAST','BANK') NOT NULL,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `invoice`
+--
+
+INSERT INTO `invoice` (`id`, `order_id`, `total_amount`, `type_payment`, `created_at`) VALUES
+(1, 30, 229000.00, 'CAST', '2026-01-24 12:48:00');
 
 -- --------------------------------------------------------
 
@@ -149,10 +156,7 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `customer_name`, `table_number`, `staff_id`, `status`, `note`, `created_at`, `end_at`) VALUES
-(24, 'Khách', 1, NULL, 'PAID', '', '2026-01-10 11:34:49', '2026-01-10 11:35:51'),
-(25, 'Khách', 1, NULL, 'PAID', '', '2026-01-10 11:36:18', '2026-01-10 13:54:42'),
-(26, 'Khách', 3, NULL, 'PAID', '', '2026-01-10 13:54:21', '2026-01-10 13:56:06'),
-(27, 'Khách', 3, NULL, 'PAID', '', '2026-01-10 13:58:25', '2026-01-10 13:58:42');
+(30, 'Mai Hảo', 2, 1, 'PAID', '', '2026-01-24 12:47:33', '2026-01-24 12:48:00');
 
 -- --------------------------------------------------------
 
@@ -175,15 +179,8 @@ CREATE TABLE `order_item` (
 --
 
 INSERT INTO `order_item` (`id`, `order_id`, `menu_item_id`, `quantity`, `price`, `status`, `created_at`) VALUES
-(39, 24, 7, 1, 15000.00, 'WAITING', '2026-01-10 11:34:49'),
-(40, 24, 4, 1, 35000.00, 'WAITING', '2026-01-10 11:34:49'),
-(41, 24, 3, 1, 50000.00, 'WAITING', '2026-01-10 11:34:49'),
-(42, 25, 6, 1, 5000.00, 'DONE', '2026-01-10 11:36:18'),
-(43, 25, 1, 1, 48000.00, 'DONE', '2026-01-10 11:36:18'),
-(44, 26, 8, 1, 20000.00, 'DONE', '2026-01-10 13:54:21'),
-(45, 26, 4, 1, 35000.00, 'DONE', '2026-01-10 13:54:21'),
-(46, 27, 8, 1, 20000.00, 'DONE', '2026-01-10 13:58:25'),
-(47, 27, 4, 1, 35000.00, 'DONE', '2026-01-10 13:58:25');
+(54, 30, 60, 3, 20000.00, 'DONE', '2026-01-24 12:47:33'),
+(55, 30, 17, 1, 169000.00, 'DONE', '2026-01-24 12:47:33');
 
 -- --------------------------------------------------------
 
@@ -240,7 +237,8 @@ CREATE TABLE `staff` (
 
 INSERT INTO `staff` (`id`, `full_name`, `username`, `password_hash`, `position`, `is_active`, `created_at`, `cccd`, `phone`, `email`, `address`) VALUES
 (1, 'Nguyễn Văn A', 'nhanvien1', '$2y$10$atQOhiM6eA3OVG87uBb75eZaUAdwE06k5jI1ehXrooolT7r7wy4Pa', 'STAFF', 1, '2026-01-10 06:47:57', NULL, '0901234567', 'nhanvien1@vuonque.com', ''),
-(2, 'Trần Thị B', 'quanly1', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.w7gYTTgI4qA1MrLN3G', 'MANAGE', 1, '2026-01-10 06:47:57', NULL, '0907654321', 'quanly1@vuonque.com', NULL);
+(2, 'Trần Thị B', 'quanly1', '$2y$10$atQOhiM6eA3OVG87uBb75eZaUAdwE06k5jI1ehXrooolT7r7wy4Pa', 'MANAGE', 1, '2026-01-10 06:47:57', NULL, '0907654321', 'quanly1@vuonque.com', NULL),
+(3, 'Mai Hảo', 'admin', '$2y$10$atQOhiM6eA3OVG87uBb75eZaUAdwE06k5jI1ehXrooolT7r7wy4Pa', 'ADMIN', 1, '2026-01-24 13:11:09', '', '0399714932', 'maivanhao2110@gmail.com', 'Số 2, Đường Võ Oanh, P.25, Q. Bình Thạnh, Thành Phố Hồ Chí Minh');
 
 --
 -- Indexes for dumped tables
@@ -319,7 +317,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `menu_item`
@@ -331,13 +329,13 @@ ALTER TABLE `menu_item`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `order_item`
 --
 ALTER TABLE `order_item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `order_status_log`
@@ -355,7 +353,7 @@ ALTER TABLE `payment`
 -- AUTO_INCREMENT for table `staff`
 --
 ALTER TABLE `staff`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

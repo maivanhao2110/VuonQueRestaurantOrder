@@ -13,13 +13,13 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <a href="../index.html" class="brand">
+                <a href="index.html" class="brand">
                     <span>🍽️</span> Vườn Quê Admin
                 </a>
             </div>
             <ul class="sidebar-menu">
                 <li>
-                    <a href="../index.html">
+                    <a href="index.html">
                         <span class="icon">🏠</span> Tổng quan
                     </a>
                 </li>
@@ -58,9 +58,18 @@
         <main class="main-content">
             <header class="top-header">
                 <h1 class="page-title">Quản lý menu</h1>
-                <div class="user-profile">
-                    <span class="user-name">Quản trị viên</span>
+                <div class="user-profile" onclick="toggleProfileDropdown()"
+                    style="cursor: pointer; position: relative;">
+                    <span class="user-name" id="adminName">Quản trị viên</span>
                     <div class="avatar">A</div>
+
+                    <div class="dropdown-content" id="profileDropdown"
+                        style="display: none; position: absolute; right: 0; top: 100%; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 8px; padding: 8px 0; min-width: 150px; z-index: 100;">
+                        <a href="#" onclick="logout(event)"
+                            style="display: flex; align-items: center; padding: 10px 16px; color: #ef4444; text-decoration: none; transition: background 0.1s;">
+                            <span style="margin-right: 8px;">🚪</span> Đăng xuất
+                        </a>
+                    </div>
                 </div>
             </header>
 
@@ -207,6 +216,41 @@
             }
         }
         fetchMenu();
+
+        // Auth & UI Helpers
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function logout(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            localStorage.removeItem('admin_user');
+            window.location.href = 'login.html';
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-profile')) {
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown) dropdown.style.display = 'none';
+            }
+        });
+
+        // Load admin name
+        document.addEventListener('DOMContentLoaded', () => {
+            const userJson = localStorage.getItem('admin_user');
+            if (userJson) {
+                const user = JSON.parse(userJson);
+                const nameEl = document.getElementById('adminName');
+                if (nameEl && user.full_name) nameEl.textContent = user.full_name;
+            }
+        });
     </script>
 </body>
 

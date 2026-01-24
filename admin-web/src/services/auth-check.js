@@ -2,15 +2,9 @@
 (function () {
     const userJson = localStorage.getItem('admin_user');
 
-    // Helper to get correct login path relative to current location
-    // Assumes we are in /admin-web/src/ or /admin-web/src/pages/
+    // All admin pages are now in /pages/
     const getLoginPath = () => {
-        const path = window.location.pathname;
-        if (path.includes('/pages/')) {
-            return 'login.html';
-        } else {
-            return 'pages/login.html';
-        }
+        return 'login.html';
     };
 
     if (!userJson) {
