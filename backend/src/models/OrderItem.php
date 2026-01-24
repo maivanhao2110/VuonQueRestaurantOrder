@@ -1,134 +1,27 @@
 <?php
 /**
- * OrderItem Model
+ * OrderItem Entity
  */
 
-class OrderItem
-{
-    private $conn;
-    private $table_name = "order_item";
+class OrderItem {
+    public $id;
+    public $order_id;
+    public $menu_item_id;
+    public $quantity;
+    public $price;
+    public $status;
+    public $created_at;
 
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
-
-    /**
-     * Create order items in batch
-     */
-    public function createBatch($orderId, $items)
-    {
-        $query = "INSERT INTO " . $this->table_name . "
-                  (order_id, menu_item_id, quantity, price)
-                  VALUES (:order_id, :menu_item_id, :quantity, :price)";
-
-        $stmt = $this->conn->prepare($query);
-
-        foreach ($items as $item) {
-            $stmt->bindParam(':order_id', $orderId);
-            $stmt->bindParam(':menu_item_id', $item['menu_item_id']);
-            $stmt->bindParam(':quantity', $item['quantity']);
-            $stmt->bindParam(':price', $item['price']);
-
-            if (!$stmt->execute()) {
-                return false;
-            }
+    public function __construct($data = []) {
+        if (!empty($data)) {
+            $this->id = $data['id'] ?? null;
+            $this->order_id = $data['order_id'] ?? null;
+            $this->menu_item_id = $data['menu_item_id'] ?? null;
+            $this->quantity = $data['quantity'] ?? null;
+            $this->price = $data['price'] ?? null;
+            $this->status = $data['status'] ?? null;
+            $this->created_at = $data['created_at'] ?? null;
         }
-
-        return true;
-    }
-
-    /**
-     * Get items for an order
-     */
-    public function getByOrderId($orderId)
-    {
-        $query = "SELECT oi.*, m.name as menu_item_name 
-                  FROM " . $this->table_name . " oi
-                  LEFT JOIN menu_item m ON oi.menu_item_id = m.id
-                  WHERE oi.order_id = :order_id";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':order_id', $orderId);
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * Update item status
-     */
-    public function updateStatus($id, $status)
-    {
-        $query = "UPDATE " . $this->table_name . " 
-                  SET status = :status 
-                  WHERE id = :id";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':status', $status);
-        $stmt->bindParam(':id', $id);
-
-        return $stmt->execute();
-    }
-
-    /**
-     * Get item by ID
-     */
-    public function getById($id)
-    {
-        $query = "SELECT oi.*, m.name as menu_item_name 
-                  FROM " . $this->table_name . " oi
-                  LEFT JOIN menu_item m ON oi.menu_item_id = m.id
-                  WHERE oi.id = :id";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-    /**
-     * Create single item
-     */
-    public function create($orderId, $menuItemId, $quantity, $price)
-    {
-        $query = "INSERT INTO " . $this->table_name . "
-                  (order_id, menu_item_id, quantity, price, status)
-                  VALUES (:order_id, :menu_item_id, :quantity, :price, 'WAITING')";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':order_id', $orderId);
-        $stmt->bindParam(':menu_item_id', $menuItemId);
-        $stmt->bindParam(':quantity', $quantity);
-        $stmt->bindParam(':price', $price);
-
-        if ($stmt->execute()) {
-            return $this->conn->lastInsertId();
-        }
-        return false;
-    }
-
-    /**
-     * Update quantity
-     */
-    public function updateQuantity($id, $quantity)
-    {
-        $query = "UPDATE " . $this->table_name . " SET quantity = :quantity WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':quantity', $quantity);
-        $stmt->bindParam(':id', $id);
-        return $stmt->execute();
-    }
-
-    /**
-     * Delete item
-     */
-    public function delete($id)
-    {
-        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        return $stmt->execute();
     }
 }
 ?>

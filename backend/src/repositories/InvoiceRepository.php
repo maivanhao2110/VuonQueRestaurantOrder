@@ -1,0 +1,59 @@
+<?php
+require_once __DIR__ . '/BaseRepository.php';
+
+class InvoiceRepository extends BaseRepository {
+    protected $table_name = "invoice";
+
+    public function create($orderId, $totalAmount, $typePayment) {
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (order_id, total_amount, type_payment, created_at)
+                  VALUES (:order_id, :total_amount, :type_payment, NOW())";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':order_id', $orderId);
+        $stmt->bindParam(':total_amount', $totalAmount);
+        $stmt->bindParam(':type_payment', $typePayment);
+
+        if ($stmt->execute()) {
+            return $this->conn->lastInsertId();
+        }
+        return false;
+    }
+
+    // Override getAll to include JOINs
+    public function getAll() {
+        $query = "SELECT i.*, o.table_number, o.customer_name, o.note, s.full_name as staff_name
+                  FROM " . $this->table_name . " i
+                  LEFT JOIN orders o ON i.order_id = o.id
+                  LEFT JOIN staff s ON o.staff_id = s.id
+                  ORDER BY i.created_at DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Override getById to include JOINs and Items
+    public function getById($id) {
+        $query = "SELECT i.*, o.table_number, o.customer_name, o.note, s.full_name as staff_name
+                  FROM " . $this->table_name . " i
+                  LEFT JOIN orders o ON i.order_id = o.id
+                  LEFT JOIN staff s ON o.staff_id = s.id
+                  WHERE i.id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([':id' => $id]);
+        $invoice = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($invoice) {
+            $query = "SELECT oi.*, m.name as menu_item_name 
+                      FROM order_item oi
+                      LEFT JOIN menu_item m ON oi.menu_item_id = m.id
+                      WHERE oi.order_id = :order_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([':order_id' => $invoice['order_id']]);
+            $invoice['items'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return $invoice;
+    }
+}
+?>

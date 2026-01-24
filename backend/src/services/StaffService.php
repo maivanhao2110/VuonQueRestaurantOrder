@@ -3,26 +3,30 @@
  * Staff Service
  */
 
-require_once __DIR__ . '/../models/Staff.php';
+require_once __DIR__ . '/../repositories/StaffRepository.php';
 
 class StaffService {
-    private $staffModel;
+    private $staffRepo;
 
     public function __construct($db) {
-        $this->staffModel = new Staff($db);
+        $this->staffRepo = new StaffRepository($db);
     }
 
     public function getStaffList($includeInactive = true) {
-        return $this->staffModel->getAll($includeInactive);
+        return $this->staffRepo->getAll($includeInactive);
+    }
+
+    public function findByUsername($username) {
+        return $this->staffRepo->findByUsername($username);
     }
 
     public function getStaff($id) {
-        return $this->staffModel->getById($id);
+        return $this->staffRepo->getById($id);
     }
 
     public function createStaff($fullName, $username, $passwordPlain, $position = 'STAFF', $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
         $passwordHash = password_hash($passwordPlain, PASSWORD_DEFAULT);
-        return $this->staffModel->create($fullName, $username, $passwordHash, $position, $cccd, $phone, $email, $address, $isActive);
+        return $this->staffRepo->create($fullName, $username, $passwordHash, $position, $cccd, $phone, $email, $address, $isActive);
     }
 
     public function updateStaff($id, $fullName, $username, $position, $passwordPlainOrNull, $cccd = null, $phone = null, $email = null, $address = null, $isActive = 1) {
@@ -31,17 +35,15 @@ class StaffService {
             $passwordHashOrNull = password_hash($passwordPlainOrNull, PASSWORD_DEFAULT);
         }
 
-        return $this->staffModel->update($id, $fullName, $username, $position, $passwordHashOrNull, $cccd, $phone, $email, $address, $isActive);
+        return $this->staffRepo->update($id, $fullName, $username, $position, $passwordHashOrNull, $cccd, $phone, $email, $address, $isActive);
     }
 
-    // Old deleteStaff was locking, now we make it hard delete as requested
     public function deleteStaff($id) {
-        return $this->staffModel->delete($id);
+        return $this->staffRepo->delete($id);
     }
 
     public function toggleActive($id, $isActive) {
-        return $this->staffModel->setActive($id, $isActive);
+        return $this->staffRepo->setActive($id, $isActive);
     }
 }
-
 ?>

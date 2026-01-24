@@ -1,69 +1,23 @@
 <?php
 /**
- * Invoice Model
+ * Invoice Entity
  */
 
-class Invoice
-{
-    private $conn;
-    private $table_name = "invoice";
+class Invoice {
+    public $id;
+    public $order_id;
+    public $total_amount;
+    public $type_payment;
+    public $created_at;
 
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
-
-    public function create($orderId, $totalAmount, $typePayment)
-    {
-        $query = "INSERT INTO " . $this->table_name . " 
-                  (order_id, total_amount, type_payment, created_at)
-                  VALUES (:order_id, :total_amount, :type_payment, NOW())";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':order_id', $orderId);
-        $stmt->bindParam(':total_amount', $totalAmount);
-        $stmt->bindParam(':type_payment', $typePayment);
-
-        if ($stmt->execute()) {
-            return $this->conn->lastInsertId();
+    public function __construct($data = []) {
+        if (!empty($data)) {
+            $this->id = $data['id'] ?? null;
+            $this->order_id = $data['order_id'] ?? null;
+            $this->total_amount = $data['total_amount'] ?? null;
+            $this->type_payment = $data['type_payment'] ?? null;
+            $this->created_at = $data['created_at'] ?? null;
         }
-        return false;
-    }
-
-    public function getAll()
-    {
-        $query = "SELECT i.*, o.table_number, o.customer_name, o.note, s.full_name as staff_name
-                  FROM " . $this->table_name . " i
-                  LEFT JOIN orders o ON i.order_id = o.id
-                  LEFT JOIN staff s ON o.staff_id = s.id
-                  ORDER BY i.created_at DESC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getById($id)
-    {
-        $query = "SELECT i.*, o.table_number, o.customer_name, o.note, s.full_name as staff_name
-                  FROM " . $this->table_name . " i
-                  LEFT JOIN orders o ON i.order_id = o.id
-                  LEFT JOIN staff s ON o.staff_id = s.id
-                  WHERE i.id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute([':id' => $id]);
-        $invoice = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($invoice) {
-            $query = "SELECT oi.*, m.name as menu_item_name 
-                      FROM order_item oi
-                      LEFT JOIN menu_item m ON oi.menu_item_id = m.id
-                      WHERE oi.order_id = :order_id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->execute([':order_id' => $invoice['order_id']]);
-            $invoice['items'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        return $invoice;
     }
 }
 ?>

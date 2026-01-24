@@ -15,13 +15,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../core/Container.php';
 require_once __DIR__ . '/../controllers/StaffController.php';
 require_once __DIR__ . '/../utils/Response.php';
 
-$database = new Database();
-$db = $database->getConnection();
+// Services
+require_once __DIR__ . '/../services/MenuService.php';
+require_once __DIR__ . '/../services/StaffService.php';
+require_once __DIR__ . '/../services/OrderService.php';
 
-$controller = new StaffController($db);
+// Setup Container
+$container = new Container();
+
+$container->set('db', function($c) {
+    return Database::getInstance()->getConnection();
+});
+
+$container->set('menuService', function($c) {
+    return new MenuService($c->get('db'));
+});
+
+$container->set('staffService', function($c) {
+    return new StaffService($c->get('db'));
+});
+
+$container->set('orderService', function($c) {
+    return new OrderService($c->get('db'));
+});
+
+$container->set('StaffController', function($c) {
+    return new StaffController(
+        $c->get('orderService'),
+        $c->get('menuService'),
+        $c->get('staffService'),
+        $c->get('db') // legacy support
+    );
+});
+
+$controller = $container->get('StaffController');
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 // Standardized Path Extraction
 // We explicitly look for '/api/staff' in the request URI to ensure we get the full correct path

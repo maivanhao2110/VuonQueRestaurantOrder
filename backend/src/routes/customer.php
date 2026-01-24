@@ -16,14 +16,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Database connection
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../core/Container.php';
 require_once __DIR__ . '/../controllers/CustomerController.php';
 require_once __DIR__ . '/../utils/Response.php';
 
-$database = new Database();
-$db = $database->getConnection();
+// Services
+require_once __DIR__ . '/../services/MenuService.php';
+require_once __DIR__ . '/../services/OrderService.php';
 
-// Create controller instance
-$controller = new CustomerController($db);
+// Setup Container
+$container = new Container();
+
+$container->set('db', function($c) {
+    return Database::getInstance()->getConnection();
+});
+
+$container->set('menuService', function($c) {
+    return new MenuService($c->get('db'));
+});
+
+$container->set('orderService', function($c) {
+    return new OrderService($c->get('db'));
+});
+
+$container->set('CustomerController', function($c) {
+    return new CustomerController(
+        $c->get('menuService'),
+        $c->get('orderService')
+    );
+});
+
+// Resolve Controller
+$controller = $container->get('CustomerController');
 
 // Get request method and path
 $requestMethod = $_SERVER['REQUEST_METHOD'];

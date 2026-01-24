@@ -3,69 +3,70 @@
  * Menu Service
  */
 
-require_once __DIR__ . '/../models/Category.php';
-require_once __DIR__ . '/../models/MenuItem.php';
+require_once __DIR__ . '/../repositories/CategoryRepository.php';
+require_once __DIR__ . '/../repositories/MenuItemRepository.php';
 
 class MenuService {
-    private $categoryModel;
-    private $menuItemModel;
+    private $categoryRepo;
+    private $menuItemRepo;
 
     public function __construct($db) {
-        $this->categoryModel = new Category($db);
-        $this->menuItemModel = new MenuItem($db);
+        // In the future, these should be injected via DI container
+        $this->categoryRepo = new CategoryRepository($db);
+        $this->menuItemRepo = new MenuItemRepository($db);
     }
 
     public function getCategories() {
-        return $this->categoryModel->getAll();
+        return $this->categoryRepo->getAllActive();
     }
 
     public function getCategoriesAdmin($includeInactive = true) {
-        return $this->categoryModel->getAllAdmin($includeInactive);
+        return $this->categoryRepo->getAllAdmin($includeInactive);
     }
 
     public function getCategory($id) {
-        return $this->categoryModel->getById($id);
+        return $this->categoryRepo->getById($id);
     }
 
     public function createCategory($name, $description = null, $isActive = 1) {
-        return $this->categoryModel->create($name, $description, $isActive);
+        return $this->categoryRepo->create($name, $description, $isActive);
     }
 
     public function updateCategory($id, $name, $description = null, $isActive = 1) {
-        return $this->categoryModel->update($id, $name, $description, $isActive);
+        return $this->categoryRepo->update($id, $name, $description, $isActive);
     }
 
     public function deleteCategory($id) {
-        return $this->categoryModel->delete($id);
+        return $this->categoryRepo->delete($id);
     }
 
     public function toggleCategoryStatus($id, $isActive) {
-        return $this->categoryModel->setActive($id, $isActive);
+        return $this->categoryRepo->setActive($id, $isActive);
     }
 
     public function getMenuItems($categoryId = null) {
-        return $this->menuItemModel->getAll($categoryId);
+        return $this->menuItemRepo->getAll($categoryId);
     }
 
     public function getMenuItemsAdmin($categoryId = null, $includeUnavailable = true) {
-        return $this->menuItemModel->getAllAdmin($categoryId, $includeUnavailable);
+        return $this->menuItemRepo->getAllAdmin($categoryId, $includeUnavailable);
     }
 
     public function getMenuItem($id) {
-        return $this->menuItemModel->getById($id);
+        return $this->menuItemRepo->getById($id);
     }
 
     public function createMenuItem($categoryId, $name, $price, $imageUrl = null, $description = null, $isAvailable = 1) {
-        return $this->menuItemModel->create($categoryId, $name, $price, $imageUrl, $description, $isAvailable);
+        return $this->menuItemRepo->create($categoryId, $name, $price, $imageUrl, $description, $isAvailable);
     }
 
     public function updateMenuItem($id, $categoryId, $name, $price, $imageUrl = null, $description = null, $isAvailable = 1) {
-        return $this->menuItemModel->update($id, $categoryId, $name, $price, $imageUrl, $description, $isAvailable);
+        return $this->menuItemRepo->update($id, $categoryId, $name, $price, $imageUrl, $description, $isAvailable);
     }
 
     public function deleteMenuItem($id) {
         // Soft delete
-        return $this->menuItemModel->setAvailable($id, 0);
+        return $this->menuItemRepo->setAvailable($id, 0);
     }
 }
 ?>

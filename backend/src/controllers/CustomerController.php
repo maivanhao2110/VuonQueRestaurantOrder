@@ -13,9 +13,9 @@ class CustomerController {
     private $menuService;
     private $orderService;
 
-    public function __construct($db) {
-        $this->menuService = new MenuService($db);
-        $this->orderService = new OrderService($db);
+    public function __construct($menuService, $orderService) {
+        $this->menuService = $menuService;
+        $this->orderService = $orderService;
     }
 
     // ==================== Menu Endpoints ====================
