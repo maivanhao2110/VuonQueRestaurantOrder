@@ -8,7 +8,7 @@ class Database {
     private $host = "localhost";
     private $db_name = "db_vuonquerestaurant";
     private $username = "root";
-    private $password = "14112005";
+    private $password = "";
     private $port = "3306";
     public $conn;
 

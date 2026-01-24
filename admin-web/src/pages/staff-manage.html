@@ -89,6 +89,7 @@
             </div>
         </main>
     </div>
+    <script src="../services/auth.js"></script>
     <script src="../services/admin-api.js"></script>
     <script>
         let editingId = null;
@@ -104,7 +105,7 @@
                 <td><strong>${item.full_name}</strong></td>
                 <td>${item.username}</td>
                 <td>${item.address || ''}</td>
-                <td>${item.position === 'MANAGER' ? 'Quản lý' : 'Nhân viên'}</td>
+                <td>${item.position === 'MANAGE' ? 'Quản lý' : 'Nhân viên'}</td>
                 <td><span style="color: ${item.is_active ? 'var(--color-primary-600)' : '#ef4444'}; font-weight: 600;">${item.is_active ? 'Hoạt động' : 'Đã khóa'}</span></td>
                 <td style="text-align: right;">
                     <button class="btn" style="padding: 6px 12px; background: var(--color-primary-50); color: var(--color-primary-700); margin-right: 8px;" onclick="editStaff(${item.id})">Sửa</button>
@@ -114,14 +115,42 @@
                 });
             }).catch(err => console.error('Lỗi tải nhân viên:', err));
         }
+        function renderPositionOptions(selectedPosition = 'STAFF') {
+            const currentUser = authApi.getUser();
+            const select = document.getElementById('position');
+            select.innerHTML = ''; // Clear current options
+
+            // Always allow creating STAFF
+            const opts = [{ value: 'STAFF', label: 'Nhân viên' }];
+
+            // Only ADMIN can create/assign MANAGE role
+            if (currentUser && currentUser.position === 'ADMIN') {
+                opts.push({ value: 'MANAGE', label: 'Quản lý' });
+            }
+
+            opts.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.innerText = opt.label;
+                if (opt.value === selectedPosition) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
         function showAddForm() {
             editingId = null;
             document.getElementById('form-title').innerText = 'Thêm nhân viên';
             document.getElementById('staff-form').style.display = '';
             document.querySelectorAll('#staff-form input').forEach(i => i.value = '');
-            document.getElementById('position').value = 'STAFF';
+
+            // Render options based on current user role
+            renderPositionOptions('STAFF');
+
             document.getElementById('is_active').checked = true;
         }
+
         function editStaff(id) {
             adminApi.getStaff(id).then(item => {
                 editingId = id;
@@ -134,10 +163,15 @@
                 document.getElementById('email').value = item.email || '';
                 document.getElementById('phone').value = item.phone || '';
                 document.getElementById('address').value = item.address || '';
-                document.getElementById('position').value = item.position || 'STAFF';
+
+                // Render options (ADMIN sees all, MANAGE only sees limited if they were somehow editing a manager? 
+                // Checks should be stricter but for now this fits the requirement)
+                renderPositionOptions(item.position || 'STAFF');
+
                 document.getElementById('is_active').checked = item.is_active == 1;
             });
         }
+
         function hideForm() {
             document.getElementById('staff-form').style.display = 'none';
         }
