@@ -157,7 +157,7 @@
             });
         }
         function fetchCategories() {
-            adminApi.getCategories().then(data => {
+            return adminApi.getCategories().then(data => {
                 categories = data;
                 const sel = document.getElementById('category_id');
                 sel.innerHTML = '';
@@ -182,13 +182,16 @@
                 editingId = id;
                 document.getElementById('form-title').innerText = 'Sửa món';
                 document.getElementById('menu-form').style.display = '';
-                document.getElementById('name').value = item.name;
-                document.getElementById('category_id').value = item.category_id;
-                document.getElementById('price').value = item.price;
-                document.getElementById('image_url').value = item.image_url || '';
-                document.getElementById('description').value = item.description || '';
-                document.getElementById('is_available').checked = item.is_available == 1;
-                fetchCategories();
+
+                // Wait for categories to load before setting values
+                fetchCategories().then(() => {
+                    document.getElementById('name').value = item.name;
+                    document.getElementById('category_id').value = item.category_id;
+                    document.getElementById('price').value = item.price;
+                    document.getElementById('image_url').value = item.image_url || '';
+                    document.getElementById('description').value = item.description || '';
+                    document.getElementById('is_available').checked = item.is_available == 1;
+                });
             });
         }
         function hideForm() {

@@ -96,13 +96,34 @@
         </div>
     </div>
 
+    <!-- Search Modal -->
+    <div id="searchModal" class="modal-backdrop hidden" style="display: none;">
+        <div class="modal search-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Tìm kiếm món ăn</h3>
+                <button class="btn-close" onclick="closeSearchModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-input-group">
+                    <span class="search-input-icon">🔍</span>
+                    <input type="text" id="searchInput" class="search-input-field" placeholder="Nhập tên món ăn..."
+                        autocomplete="off">
+                </div>
+                <p class="search-hint">Nhấn Enter hoặc nút Tìm kiếm bên dưới</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btn-full" onclick="performSearch()">Tìm kiếm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="../config/config.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../services/api.js"></script>
     <script src="../assets/js/cart.js"></script>
     <script src="../assets/js/order.js"></script>
-    <script src="../assets/js/menu-page.js"></script>
+    <script src="../assets/js/menu-page.js?v=1.2"></script>
 </body>
 
 </html>

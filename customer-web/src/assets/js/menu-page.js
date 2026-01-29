@@ -1,7 +1,111 @@
 /**
  * Menu Page JavaScript
- * Handles menu display, filtering, and add to cart
+ * Handles menu display, filtering, search, and add to cart
  */
+
+/**
+ * Search Manager Class
+ * Handles all search-related functionality following SRP
+ */
+class SearchManager {
+    constructor(menuItems) {
+        this.menuItems = menuItems;
+        this.elements = {
+            modal: document.getElementById('searchModal'),
+            input: document.getElementById('searchInput')
+        };
+        this.currentSearchTerm = '';
+        this.initEventListeners();
+    }
+
+    /**
+     * Update menu items source
+     * @param {Array} items - New menu items
+     */
+    updateItems(items) {
+        this.menuItems = items;
+    }
+
+    /**
+     * Initialize event listeners
+     */
+    initEventListeners() {
+        // Search on Enter key
+        this.elements.input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.performSearch();
+            }
+        });
+    }
+
+    /**
+     * Perform search and filter main grid
+     */
+    performSearch() {
+        const query = this.elements.input.value;
+        this.currentSearchTerm = query.trim().toLowerCase();
+
+        // Close modal
+        this.closeModal();
+
+        // Filter items
+        this.filterAndRender();
+    }
+
+    /**
+     * Filter items based on current category and search term
+     */
+    filterAndRender() {
+        let filteredItems = this.menuItems;
+
+        // Filter by category first (using global currentCategory variable)
+        if (currentCategory !== 'all') {
+            filteredItems = filteredItems.filter(item => String(item.category_id) === String(currentCategory));
+        }
+
+        // Then filter by search term
+        if (this.currentSearchTerm) {
+            filteredItems = filteredItems.filter(item => {
+                const nameMatch = item.name.toLowerCase().includes(this.currentSearchTerm);
+                const descMatch = item.description && item.description.toLowerCase().includes(this.currentSearchTerm);
+                return nameMatch || descMatch;
+            });
+        }
+
+        // Render results
+        renderMenuItems(filteredItems);
+    }
+
+    /**
+     * Clear search
+     */
+    clearSearch() {
+        this.currentSearchTerm = '';
+        this.elements.input.value = '';
+        this.filterAndRender();
+    }
+
+    /**
+     * Open search modal
+     */
+    openModal() {
+        this.elements.modal.classList.remove('hidden');
+        this.elements.modal.style.display = 'flex';
+        // Focus input after modal is shown
+        setTimeout(() => this.elements.input.focus(), 100);
+    }
+
+    /**
+     * Close search modal
+     */
+    closeModal() {
+        this.elements.modal.classList.add('hidden');
+        setTimeout(() => {
+            this.elements.modal.style.display = 'none';
+        }, 300);
+    }
+}
+
 
 // State
 let allMenuItems = [];
@@ -10,10 +114,16 @@ let currentCategory = 'all';
 let currentModalItem = null;
 let currentModalQuantity = 1;
 
+// Search Manager instance
+let searchManager = null;
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', async () => {
     await initMenuPage();
-    
+
+    // Initialize Search Manager
+    searchManager = new SearchManager(allMenuItems);
+
     // Event delegation for add-to-cart buttons
     document.getElementById('menuGrid').addEventListener('click', (e) => {
         const btn = e.target.closest('.add-to-cart-btn');
@@ -68,7 +178,7 @@ function updateNavigationLinks(tableNumber) {
 async function loadCategories() {
     try {
         allCategories = await api.getCategories();
-        
+
         if (allCategories.length > 0) {
             renderCategoryTabs();
         }
@@ -82,14 +192,14 @@ async function loadCategories() {
  */
 function renderCategoryTabs() {
     const categoryTabs = document.getElementById('categoryTabs');
-    
+
     // Keep "Tất cả" tab and add categories (skip "Tất cả" from database)
     allCategories.forEach(category => {
         // Skip if category name is "Tất cả" to avoid duplicate
         if (category.name === 'Tất cả') {
             return;
         }
-        
+
         const tab = document.createElement('button');
         tab.className = 'category-tab';
         tab.setAttribute('data-category', category.id);
@@ -105,11 +215,16 @@ function renderCategoryTabs() {
 async function loadMenuItems() {
     try {
         showLoading('Đang tải menu...');
-        
+
         allMenuItems = await api.getMenuItems();
-        
+
+        // Update search manager with new items
+        if (searchManager) {
+            searchManager.updateItems(allMenuItems);
+        }
+
         hideLoading();
-        
+
         if (allMenuItems.length === 0) {
             showEmptyState();
         } else {
@@ -146,7 +261,7 @@ function renderMenuItems(items) {
 function createMenuItemCard(item) {
     const card = document.createElement('div');
     card.className = 'menu-item-card';
-    
+
     if (!item.is_available) {
         card.classList.add('unavailable');
     }
@@ -175,6 +290,15 @@ function createMenuItemCard(item) {
 }
 
 /**
+ * Perform search from modal button
+ */
+function performSearch() {
+    if (searchManager) {
+        searchManager.performSearch();
+    }
+}
+
+/**
  * Filter menu by category
  */
 function filterByCategory(categoryId) {
@@ -191,13 +315,17 @@ function filterByCategory(categoryId) {
         }
     });
 
-    // Filter items
-    let filteredItems = allMenuItems;
-    if (categoryId !== 'all') {
-        filteredItems = allMenuItems.filter(item => String(item.category_id) === String(categoryId));
+    // Use search manager to filter if available, otherwise default behavior
+    if (searchManager) {
+        searchManager.filterAndRender();
+    } else {
+        // Fallback (should not happen once initialized)
+        let filteredItems = allMenuItems;
+        if (categoryId !== 'all') {
+            filteredItems = allMenuItems.filter(item => String(item.category_id) === String(categoryId));
+        }
+        renderMenuItems(filteredItems);
     }
-
-    renderMenuItems(filteredItems);
 }
 
 /**
@@ -217,7 +345,7 @@ function openAddToCartModal(itemId) {
     document.getElementById('modalQuantity').textContent = currentModalQuantity;
 
     const imageUrl = item.image_url || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext fill="%239ca3af" font-family="sans-serif" font-size="16" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo image%3C/text%3E%3C/svg%3E';
-    
+
     const modalImage = document.getElementById('modalItemImage');
     modalImage.src = imageUrl;
     modalImage.alt = item.name;
@@ -237,7 +365,7 @@ function closeAddToCartModal() {
     setTimeout(() => {
         modal.style.display = 'none';
     }, 300);
-    
+
     currentModalItem = null;
     currentModalQuantity = 1;
 }
@@ -284,8 +412,28 @@ function showEmptyState(message = 'Chưa có món ăn nào') {
 }
 
 /**
- * Show search modal (placeholder for future enhancement)
+ * Show search modal
  */
 function showSearchModal() {
-    showToast('Tính năng tìm kiếm đang được phát triển', 'info');
+    if (searchManager) {
+        searchManager.openModal();
+    }
+}
+
+/**
+ * Close search modal
+ */
+function closeSearchModal() {
+    if (searchManager) {
+        searchManager.closeModal();
+    }
+}
+
+/**
+ * Clear search
+ */
+function clearSearch() {
+    if (searchManager) {
+        searchManager.clearSearch();
+    }
 }
