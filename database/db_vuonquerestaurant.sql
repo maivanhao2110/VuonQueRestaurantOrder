@@ -122,17 +122,17 @@ INSERT INTO `menu_item` (`id`, `category_id`, `name`, `price`, `image_url`, `des
 (40, 6, 'Đậu hũ chiên sả', 79000.00, 'https://th.bing.com/th/id/OIP.V9HFnafAfU_3rFFBSHZlUQHaFF?w=270&h=186&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
 (41, 6, 'Trứng chiên lá mơ', 79000.00, 'https://th.bing.com/th/id/OIP.EJHbZo18ac3GJV3fYiFZXgHaEK?o=7&cb=defcache2&rm=3&defcache=1&rs=1&pid=ImgDetMain', '', 1, '2026-01-24 12:29:08'),
 (42, 6, 'Đậu hũ mỡ hành', 79000.00, 'https://th.bing.com/th/id/OIP.EJHbZo18ac3GJV3fYiFZXgHaEK?o=7&cb=defcache2&rm=3&defcache=1&rs=1&pid=ImgDetMain', '', 1, '2026-01-24 12:29:08'),
-(54, 2, 'Bia Hà Nội', 25000.00, 'https://th.bing.com/th/id/OIP.yz3n6zY3S3Y4ZpJk8x8n9gHaHa', 'Bia Hà Nội lon/chai', 1, '2026-01-24 12:32:47'),
-(55, 2, 'Bia Tiger', 30000.00, 'https://th.bing.com/th/id/OIP.wC0eGz7y3J0N9lFQn7FZJgHaHa', 'Bia Tiger lon', 1, '2026-01-24 12:32:47'),
-(56, 2, 'Bia Heineken', 35000.00, 'https://th.bing.com/th/id/OIP.0m8bH0P3y1pKJZy2H8mXqAHaHa', 'Bia Heineken lon', 1, '2026-01-24 12:32:47'),
-(57, 2, 'Bia Sài Gòn', 25000.00, 'https://th.bing.com/th/id/OIP.z1X9zWc0n9E3J7K6G5Y1tAHaHa', 'Bia Sài Gòn lon', 1, '2026-01-24 12:32:47'),
-(58, 2, 'Coca Cola', 20000.00, 'https://th.bing.com/th/id/OIP.8Q9z1ZyM3k2mXcY7zJ0RZwHaHa', 'Nước ngọt Coca Cola', 1, '2026-01-24 12:32:47'),
-(59, 2, 'Pepsi', 20000.00, 'https://th.bing.com/th/id/OIP.xY3H8c1mZ9WJk8GQ0B2KqgHaHa', 'Nước ngọt Pepsi', 1, '2026-01-24 12:32:47'),
-(60, 2, '7Up', 20000.00, 'https://th.bing.com/th/id/OIP.6N3M9p1Zx2YkWJ0G8Rk0XgHaHa', 'Nước ngọt 7Up', 1, '2026-01-24 12:32:47'),
-(61, 2, 'Nước suối Lavie', 15000.00, 'https://th.bing.com/th/id/OIP.4KxY7m8Z0N3H2RkJX1Y2xAHaHa', 'Nước suối Lavie chai', 1, '2026-01-24 12:32:47'),
-(62, 2, 'Trà xanh Không Độ', 20000.00, 'https://th.bing.com/th/id/OIP.j0M3ZxY2N8K1H9WJk7X2mAHaHa', 'Trà xanh Không Độ', 1, '2026-01-24 12:32:47'),
-(63, 2, 'Trà chanh', 25000.00, 'https://th.bing.com/th/id/OIP.FZ3Yk8Z0N9JH1mX2K7R0cAHaHa', 'Trà chanh mát lạnh', 1, '2026-01-24 12:32:47'),
-(64, 2, 'Trà đào cam sả', 35000.00, 'https://th.bing.com/th/id/OIP.HJ8Zx2M3Y0N9K7R1WcXkAHaHa', 'Trà đào cam sả', 1, '2026-01-24 12:32:47');
+(54, 2, 'Bia Hà Nội', 25000.00, 'https://biahoihanoi.info/thumbs/540x540x1/upload/product/thiet-ke-chua-co-ten-5616.png', 'Bia Hà Nội lon/chai', 1, '2026-01-24 12:32:47'),
+(55, 2, 'Bia Tiger', 30000.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDFT1o26oIgsPEhpVPyCBuJb8nrYbybj39GQ&s', 'Bia Tiger lon', 1, '2026-01-24 12:32:47'),
+(56, 2, 'Bia Heineken', 35000.00, 'https://thegioidouong.net/wp-content/uploads/2020/08/bia-heineken-bac-chai-thuy-tinh.jpg', 'Bia Heineken lon', 1, '2026-01-24 12:32:47'),
+(57, 2, 'Bia Sài Gòn', 25000.00, 'https://interbra.vn/public/DATA/2021/4-2021-43582.jpg', 'Bia Sài Gòn lon', 1, '2026-01-24 12:32:47'),
+(58, 2, 'Coca Cola', 20000.00, 'https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/2443/76450/bhx/u7uo9_202410121035383451.jpg', 'Nước ngọt Coca Cola', 1, '2026-01-24 12:32:47'),
+(59, 2, 'Pepsi', 20000.00, 'https://cdn.tgdd.vn/Products/Images/2443/76467/bhx/nuoc-ngot-pepsi-cola-lon-320ml-202407131656260952.jpg', 'Nước ngọt Pepsi', 1, '2026-01-24 12:32:47'),
+(60, 2, '7Up', 20000.00, 'https://cdn.tgdd.vn/Products/Images/2443/297295/bhx/nuoc-ngot-7-up-vi-chanh-lon-245ml-202312281121487139.jpg', 'Nước ngọt 7Up', 1, '2026-01-24 12:32:47'),
+(61, 2, 'Nước suối Lavie', 15000.00, 'https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/2563/76401/bhx/slide-2_202410161047222495.jpg', 'Nước suối Lavie chai', 1, '2026-01-24 12:32:47'),
+(62, 2, 'Trà xanh Không Độ', 20000.00, 'https://cdnv2.tgdd.vn/bhx-static/bhx/Products/Images/8938/85739/bhx/fgjiol_202410140914265805.jpg', 'Trà xanh Không Độ', 1, '2026-01-24 12:32:47'),
+(63, 2, 'Trà chanh', 25000.00, 'https://www.unileverfoodsolutions.com.vn/dam/global-ufs/mcos/phvn/vietnam/calcmenu/recipes/VN-recipes/other/energizing-lemon-tea/main-header.jpg', 'Trà chanh mát lạnh', 1, '2026-01-24 12:32:47'),
+(64, 2, 'Trà đào cam sả', 35000.00, 'https://cdn.tgdd.vn/Files/2018/08/14/1109521/cach-lam-tra-dao-cam-sa-giai-nhiet-hieu-qua-ngay-tai-nha-202112301524304318.jpg', 'Trà đào cam sả', 1, '2026-01-24 12:32:47');
 
 -- --------------------------------------------------------
 
