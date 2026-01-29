@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 24, 2026 at 03:20 PM
+-- Generation Time: Jan 29, 2026 at 04:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -64,7 +64,9 @@ CREATE TABLE `invoice` (
 --
 
 INSERT INTO `invoice` (`id`, `order_id`, `total_amount`, `type_payment`, `created_at`) VALUES
-(1, 30, 229000.00, 'CAST', '2026-01-24 12:48:00');
+(1, 30, 229000.00, 'CAST', '2026-01-24 12:48:00'),
+(2, 31, 264000.00, 'BANK', '2026-01-25 00:11:49'),
+(3, 33, 1101000.00, 'CAST', '2026-01-29 22:29:01');
 
 -- --------------------------------------------------------
 
@@ -113,26 +115,26 @@ INSERT INTO `menu_item` (`id`, `category_id`, `name`, `price`, `image_url`, `des
 (31, 3, 'Lươn xào sả ớt', 199000.00, 'https://i.ytimg.com/vi/tcQb5Xw0s6k/maxresdefault.jpg', 'Lươn xào sả ớt cay', 1, '2026-01-24 12:27:11'),
 (32, 3, 'Lươn xào lá lốt', 199000.00, 'https://i.ytimg.com/vi/wgwa4vf_0Bk/maxresdefault.jpg', 'Lươn xào lá lốt', 1, '2026-01-24 12:27:11'),
 (33, 3, 'Lươn om chuối đậu', 269000.00, 'https://tse2.mm.bing.net/th/id/OIP.OhHHqFhViUEWwE37D9mCVgHaFj?cb=defcache2&defcache=1&rs=1&pid=ImgDetMain&o=7&rm=3', 'Lươn om chuối đậu đậm vị', 1, '2026-01-24 12:27:11'),
-(34, 6, 'Nem nắm Vườn Quê', 79000.00, 'https://th.bing.com/th/id/OIP.oJtPIWPTzjChLuQQ4TnzewHaET?w=298&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(35, 6, 'Cá đù 1 nắng chiên giòn', 89000.00, 'https://th.bing.com/th/id/OIP.uviXzHgscdDXVRWEgqAn0AHaFP?w=261&h=184&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(36, 6, 'Cá trinh 1 nắng chiên giòn', 119000.00, 'https://th.bing.com/th/id/OIP.27hhIwP4dIJJXwIWhElhgQHaEK?w=328&h=184&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(37, 6, 'Khoai tây chiên', 60000.00, 'https://th.bing.com/th/id/OIP.I4XIJYqGmC29Z-ANUpwI-AHaEx?w=314&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(38, 6, 'Đậu hũ chiên giòn', 60000.00, 'https://th.bing.com/th/id/OIP.p2bgANdB6HvOaArrXYcgWwHaEo?w=322&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(39, 6, 'Đậu hũ lướt ván', 60000.00, 'https://th.bing.com/th/id/OIP.lBA3O1XJ4Agtw_bz-Q2sUgHaFj?w=222&h=180&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(40, 6, 'Đậu hũ chiên sả', 79000.00, 'https://th.bing.com/th/id/OIP.V9HFnafAfU_3rFFBSHZlUQHaFF?w=270&h=186&c=7&r=0&o=7&cb=defcache2&dpr=1.3&pid=1.7&rm=3&defcache=1', '', 1, '2026-01-24 12:29:08'),
-(41, 6, 'Trứng chiên lá mơ', 79000.00, 'https://th.bing.com/th/id/OIP.EJHbZo18ac3GJV3fYiFZXgHaEK?o=7&cb=defcache2&rm=3&defcache=1&rs=1&pid=ImgDetMain', '', 1, '2026-01-24 12:29:08'),
-(42, 6, 'Đậu hũ mỡ hành', 79000.00, 'https://th.bing.com/th/id/OIP.EJHbZo18ac3GJV3fYiFZXgHaEK?o=7&cb=defcache2&rm=3&defcache=1&rs=1&pid=ImgDetMain', '', 1, '2026-01-24 12:29:08'),
-(54, 2, 'Bia Hà Nội', 25000.00, 'https://th.bing.com/th/id/OIP.yz3n6zY3S3Y4ZpJk8x8n9gHaHa', 'Bia Hà Nội lon/chai', 1, '2026-01-24 12:32:47'),
-(55, 2, 'Bia Tiger', 30000.00, 'https://th.bing.com/th/id/OIP.wC0eGz7y3J0N9lFQn7FZJgHaHa', 'Bia Tiger lon', 1, '2026-01-24 12:32:47'),
-(56, 2, 'Bia Heineken', 35000.00, 'https://th.bing.com/th/id/OIP.0m8bH0P3y1pKJZy2H8mXqAHaHa', 'Bia Heineken lon', 1, '2026-01-24 12:32:47'),
-(57, 2, 'Bia Sài Gòn', 25000.00, 'https://th.bing.com/th/id/OIP.z1X9zWc0n9E3J7K6G5Y1tAHaHa', 'Bia Sài Gòn lon', 1, '2026-01-24 12:32:47'),
-(58, 2, 'Coca Cola', 20000.00, 'https://th.bing.com/th/id/OIP.8Q9z1ZyM3k2mXcY7zJ0RZwHaHa', 'Nước ngọt Coca Cola', 1, '2026-01-24 12:32:47'),
-(59, 2, 'Pepsi', 20000.00, 'https://th.bing.com/th/id/OIP.xY3H8c1mZ9WJk8GQ0B2KqgHaHa', 'Nước ngọt Pepsi', 1, '2026-01-24 12:32:47'),
-(60, 2, '7Up', 20000.00, 'https://th.bing.com/th/id/OIP.6N3M9p1Zx2YkWJ0G8Rk0XgHaHa', 'Nước ngọt 7Up', 1, '2026-01-24 12:32:47'),
-(61, 2, 'Nước suối Lavie', 15000.00, 'https://th.bing.com/th/id/OIP.4KxY7m8Z0N3H2RkJX1Y2xAHaHa', 'Nước suối Lavie chai', 1, '2026-01-24 12:32:47'),
-(62, 2, 'Trà xanh Không Độ', 20000.00, 'https://th.bing.com/th/id/OIP.j0M3ZxY2N8K1H9WJk7X2mAHaHa', 'Trà xanh Không Độ', 1, '2026-01-24 12:32:47'),
-(63, 2, 'Trà chanh', 25000.00, 'https://th.bing.com/th/id/OIP.FZ3Yk8Z0N9JH1mX2K7R0cAHaHa', 'Trà chanh mát lạnh', 1, '2026-01-24 12:32:47'),
-(64, 2, 'Trà đào cam sả', 35000.00, 'https://th.bing.com/th/id/OIP.HJ8Zx2M3Y0N9K7R1WcXkAHaHa', 'Trà đào cam sả', 1, '2026-01-24 12:32:47');
+(34, 6, 'Nem nắm Vườn Quê', 79000.00, 'https://tse1.mm.bing.net/th/id/OIP.Y3SNQSkz21ZYt8LR8JVO9wHaEK?rs=1&pid=ImgDetMain&o=7&rm=3', '', 1, '2026-01-24 12:29:08'),
+(35, 6, 'Cá đù 1 nắng chiên giòn', 89000.00, 'https://th.bing.com/th/id/OIP.n9UcMh_xraJDKilB3KILbgHaFj?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3', '', 1, '2026-01-24 12:29:08'),
+(36, 6, 'Cá trinh 1 nắng chiên giòn', 119000.00, 'https://dacsanmuicamau.com/static/team/upload/images/san-pham/kho-ca-du-1-nang/ca-du-1-nang-chien.jpg', '', 1, '2026-01-24 12:29:08'),
+(37, 6, 'Khoai tây chiên', 60000.00, 'https://th.bing.com/th/id/OIP.t2udhokUPnB9EAyo6YMVcgHaFF?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3', '', 1, '2026-01-24 12:29:08'),
+(38, 6, 'Đậu hũ chiên giòn', 60000.00, 'https://tse2.mm.bing.net/th/id/OIP.byzBMO1NNNZVRECYMyMy_AHaE6?rs=1&pid=ImgDetMain&o=7&rm=3', '', 1, '2026-01-24 12:29:08'),
+(39, 6, 'Đậu hũ lướt ván', 60000.00, 'https://tse3.mm.bing.net/th/id/OIP.RQVtIX94xr4L4BbIxW667AHaEi?rs=1&pid=ImgDetMain&o=7&rm=3', '', 1, '2026-01-24 12:29:08'),
+(40, 6, 'Đậu hũ chiên sả', 79000.00, 'https://yummyday.vn/uploads/images/dau-hu-chien-sa.jpg', '', 1, '2026-01-24 12:29:08'),
+(41, 6, 'Trứng chiên lá mơ', 79000.00, 'https://bepxua.vn/wp-content/uploads/2022/06/trung-chien-la-mo.jpg', '', 1, '2026-01-24 12:29:08'),
+(42, 6, 'Đậu hũ mỡ hành', 79000.00, 'https://tse4.mm.bing.net/th/id/OIP.IGYLkOuhgN9KzhHL7bCAGAHaEK?rs=1&pid=ImgDetMain&o=7&rm=3', '', 1, '2026-01-24 12:29:08'),
+(54, 2, 'Bia Hà Nội', 25000.00, 'https://www.lottemart.vn/media/catalog/product/cache/0x0/8/9/8936000440053-2.jpg.webp', 'Bia Hà Nội lon/chai', 1, '2026-01-24 12:32:47'),
+(55, 2, 'Bia Tiger', 30000.00, 'https://quancathaibinh.vn/uploads/products/2222.png', 'Bia Tiger lon', 1, '2026-01-24 12:32:47'),
+(56, 2, 'Bia Heineken', 35000.00, 'https://th.bing.com/th/id/R.b209b45f41b49075238b335df19e292c?rik=RwBdoYnOC89mIQ&pid=ImgRaw&r=0', 'Bia Heineken lon', 1, '2026-01-24 12:32:47'),
+(57, 2, 'Bia Sài Gòn', 25000.00, 'https://th.bing.com/th/id/R.63524bfc47318965bdd08e2625e05bbc?rik=xUHmFZ4FfEL0tQ&pid=ImgRaw&r=0', 'Bia Sài Gòn lon', 1, '2026-01-24 12:32:47'),
+(58, 2, 'Coca Cola', 20000.00, 'https://i5.walmartimages.com/asr/e3e510eb-3379-4ce5-a8e2-31f45ed5a47e.c99ca9cb61a8a839c23892605149d63b.jpeg', 'Nước ngọt Coca Cola', 1, '2026-01-24 12:32:47'),
+(59, 2, 'Pepsi', 20000.00, 'https://tse3.mm.bing.net/th/id/OIP.ITZX9zI0LitF5mSr9G0WgAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3', 'Nước ngọt Pepsi', 1, '2026-01-24 12:32:47'),
+(60, 2, '7Up', 20000.00, 'https://ik.imagekit.io/pimberly/595e406f0f15f30010780448/tr:w-1000,h-1000,cm-pad_resize/e00c7c6e/5d70c6b06cb2114d580001dc41a8fa17.jpg?product_name=7-Up-Lemon-and-Lime-Carbonated-Canned-Soft-Drink-330ml-(Pack-of-24)-402010.jpg', 'Nước ngọt 7Up', 1, '2026-01-24 12:32:47'),
+(61, 2, 'Nước suối Lavie', 15000.00, 'https://th.bing.com/th/id/OIP.3ws4rFRGPd5BwQ23AFVNSAHaHa?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3', 'Nước suối Lavie chai', 1, '2026-01-24 12:32:47'),
+(62, 2, 'Trà xanh Không Độ', 20000.00, 'https://ketnoikhachhang.com/wp-content/uploads/2023/02/c236087f-e3e8-43c8-b1dc-d66f6f88b965.png', 'Trà xanh Không Độ', 1, '2026-01-24 12:32:47'),
+(63, 2, 'Trà chanh', 25000.00, 'https://tse2.mm.bing.net/th/id/OIP.4OIMfYYvSo_HZ0BNVORMxwHaHa?rs=1&pid=ImgDetMain&o=7&rm=3', 'Trà chanh mát lạnh', 1, '2026-01-24 12:32:47'),
+(64, 2, 'Trà đào cam sả', 35000.00, 'https://th.bing.com/th/id/OIP.ut1VQoSUfSsm1qBLrq9w6wHaFy?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3', 'Trà đào cam sả', 1, '2026-01-24 12:32:47');
 
 -- --------------------------------------------------------
 
@@ -157,7 +159,9 @@ CREATE TABLE `orders` (
 
 INSERT INTO `orders` (`id`, `customer_name`, `table_number`, `staff_id`, `status`, `note`, `created_at`, `end_at`) VALUES
 (30, 'Mai Hảo', 2, 1, 'PAID', '', '2026-01-24 12:47:33', '2026-01-24 12:48:00'),
-(31, 'Mai Hảo', 2, 1, 'SERVED', '', '2026-01-24 20:51:11', NULL);
+(31, 'Mai Hảo', 2, 1, 'PAID', '', '2026-01-24 20:51:11', '2026-01-25 00:11:49'),
+(32, 'Mai Hảo', 2, NULL, 'CANCELLED', '', '2026-01-29 22:22:56', '2026-01-29 22:23:17'),
+(33, 'Mai Hảo', 2, 1, 'PAID', '', '2026-01-29 22:23:53', '2026-01-29 22:29:01');
 
 -- --------------------------------------------------------
 
@@ -185,7 +189,16 @@ INSERT INTO `order_item` (`id`, `order_id`, `menu_item_id`, `quantity`, `price`,
 (56, 31, 60, 2, 20000.00, 'SERVED', '2026-01-24 20:51:11'),
 (57, 31, 56, 1, 35000.00, 'SERVED', '2026-01-24 20:55:35'),
 (58, 31, 60, 1, 20000.00, 'SERVED', '2026-01-24 20:56:00'),
-(59, 31, 17, 1, 169000.00, 'SERVED', '2026-01-24 21:01:51');
+(59, 31, 17, 1, 169000.00, 'SERVED', '2026-01-24 21:01:51'),
+(60, 32, 63, 1, 25000.00, 'WAITING', '2026-01-29 22:22:56'),
+(61, 32, 27, 1, 159000.00, 'WAITING', '2026-01-29 22:22:56'),
+(62, 32, 23, 10, 159000.00, 'WAITING', '2026-01-29 22:22:56'),
+(63, 32, 38, 4, 60000.00, 'WAITING', '2026-01-29 22:22:56'),
+(64, 32, 16, 1, 389000.00, 'WAITING', '2026-01-29 22:22:56'),
+(65, 33, 64, 1, 35000.00, 'SERVED', '2026-01-29 22:23:53'),
+(66, 33, 26, 1, 159000.00, 'SERVED', '2026-01-29 22:23:53'),
+(67, 33, 12, 1, 369000.00, 'SERVED', '2026-01-29 22:23:53'),
+(68, 33, 33, 2, 269000.00, 'SERVED', '2026-01-29 22:23:53');
 
 -- --------------------------------------------------------
 
@@ -278,7 +291,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `menu_item`
@@ -290,13 +303,13 @@ ALTER TABLE `menu_item`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `order_item`
 --
 ALTER TABLE `order_item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `staff`
