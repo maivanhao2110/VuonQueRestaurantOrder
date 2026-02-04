@@ -7,6 +7,7 @@
     <script src="../services/auth-check.js"></script>
     <link rel="stylesheet" href="../assets/css/MenuManage.css">
     <link rel="stylesheet" href="../assets/css/staff-manage.css">
+    <link rel="stylesheet" href="../assets/css/filter.css">
 </head>
 
 <body>
@@ -51,6 +52,9 @@
                         <h2 style="margin: 0;">Danh sách nhân viên</h2>
                         <button class="btn btn-primary" onclick="showAddForm()">+ Thêm nhân viên</button>
                     </div>
+
+                    <!-- Filter Container -->
+                    <div id="staff-filter-container"></div>
 
                     <table id="staff-table">
                         <thead>
@@ -102,41 +106,91 @@
     </div>
     <script src="../services/auth.js"></script>
     <script src="../services/admin-api.js"></script>
+    <script src="../services/filter-service.js"></script>
     <script>
         let editingId = null;
-        function fetchStaff() {
-            adminApi.getStaff().then(data => {
-                if (!data) return;
+        let allStaff = [];
+        let filterManager = null;
 
-                // Security Filter: Only ADMIN can see other ADMINs
-                const currentUser = authApi.getUser();
-                if (currentUser && currentUser.position !== 'ADMIN') {
-                    // Filter out any staff with position 'ADMIN'
-                    data = data.filter(item => item.position !== 'ADMIN');
-                }
+        // Initialize filter manager
+        function initFilters() {
+            filterManager = new FilterManager('staff-filter-container', {
+                onFilter: renderStaffTable
+            });
 
-                // Sort: Active first, then Inactive (0 at bottom)
-                // Use a stable sort if needed, but simple sort works here
-                data.sort((a, b) => b.is_active - a.is_active);
+            // Search by name/username
+            filterManager.addFilter(new TextFilterStrategy({
+                id: 'filter-search',
+                label: 'Tìm kiếm',
+                field: 'full_name',
+                placeholder: 'Nhập tên hoặc tài khoản...',
+                searchFields: ['full_name', 'username', 'email', 'phone']
+            }));
 
-                const tbody = document.querySelector('#staff-table tbody');
-                tbody.innerHTML = '';
-                data.forEach(item => {
-                    const isActive = item.is_active == 1;
-                    const tr = document.createElement('tr');
+            // Filter by position
+            filterManager.addFilter(new SelectFilterStrategy({
+                id: 'filter-position',
+                label: 'Chức vụ',
+                field: 'position',
+                allLabel: 'Tất cả chức vụ',
+                options: [
+                    { value: 'STAFF', label: 'Nhân viên' },
+                    { value: 'MANAGE', label: 'Quản lý' },
+                    { value: 'ADMIN', label: 'Quản trị viên' }
+                ]
+            }));
 
-                    // Normalize position for check
-                    const pos = (item.position || '').toUpperCase();
-                    let roleDisplay = 'Nhân viên';
-                    if (pos === 'ADMIN') roleDisplay = 'Quản trị viên';
-                    else if (pos === 'MANAGE' || pos === 'MANAGER') roleDisplay = 'Quản lý';
+            // Filter by status
+            filterManager.addFilter(new SelectFilterStrategy({
+                id: 'filter-status',
+                label: 'Trạng thái',
+                field: 'is_active',
+                allLabel: 'Tất cả trạng thái',
+                options: [
+                    { value: '1', label: 'Hoạt động' },
+                    { value: '0', label: 'Đã khóa' }
+                ]
+            }));
 
-                    // Action Buttons: View | Edit | Lock/Unlock | Delete
-                    const lockBtn = isActive
-                        ? `<button class="btn" style="padding: 6px 12px; background: #fff7ed; color: #c2410c; margin-right: 8px;" onclick="toggleStatus(${item.id}, 0)" title="Khóa tài khoản">Khóa</button>`
-                        : `<button class="btn" style="padding: 6px 12px; background: #ecfdf5; color: #047857; margin-right: 8px;" onclick="toggleStatus(${item.id}, 1)" title="Mở khóa tài khoản">Mở</button>`;
+            filterManager.render();
+        }
 
-                    tr.innerHTML = `
+        // Render staff table from filtered data
+        function renderStaffTable(data) {
+            // Security Filter: Only ADMIN can see other ADMINs
+            const currentUser = authApi.getUser();
+            if (currentUser && currentUser.position !== 'ADMIN') {
+                data = data.filter(item => item.position !== 'ADMIN');
+            }
+
+            // Sort: Active first
+            data.sort((a, b) => b.is_active - a.is_active);
+
+            const tbody = document.querySelector('#staff-table tbody');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="filter-no-results">
+                    <div class="icon">🔍</div>
+                    <p>Không tìm thấy nhân viên nào</p>
+                </td></tr>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const isActive = item.is_active == 1;
+                const tr = document.createElement('tr');
+
+                const pos = (item.position || '').toUpperCase();
+                let roleDisplay = 'Nhân viên';
+                if (pos === 'ADMIN') roleDisplay = 'Quản trị viên';
+                else if (pos === 'MANAGE' || pos === 'MANAGER') roleDisplay = 'Quản lý';
+
+                const lockBtn = isActive
+                    ? `<button class="btn" style="padding: 6px 12px; background: #fff7ed; color: #c2410c; margin-right: 8px;" onclick="toggleStatus(${item.id}, 0)" title="Khóa tài khoản">Khóa</button>`
+                    : `<button class="btn" style="padding: 6px 12px; background: #ecfdf5; color: #047857; margin-right: 8px;" onclick="toggleStatus(${item.id}, 1)" title="Mở khóa tài khoản">Mở</button>`;
+
+                tr.innerHTML = `
                 <td>${item.id}</td>
                 <td><strong>${item.full_name}</strong></td>
                 <td>${item.username}</td>
@@ -149,8 +203,15 @@
                     <button class="btn" style="padding: 6px 12px; background: var(--color-primary-50); color: var(--color-primary-700); margin-right: 8px;" onclick="editStaff(${item.id})">Sửa</button>
                     <button class="btn" style="padding: 6px 12px; background: #fee2e2; color: #ef4444;" onclick="deleteStaff(${item.id})">Xóa</button>
                 </td>`;
-                    tbody.appendChild(tr);
-                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        function fetchStaff() {
+            adminApi.getStaff().then(data => {
+                if (!data) return;
+                allStaff = data;
+                filterManager.setData(allStaff);
             }).catch(err => console.error('Lỗi tải nhân viên:', err));
         }
 
@@ -347,7 +408,13 @@
             }
         });
 
-        fetchStaff();
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof FilterManager !== 'undefined') {
+                initFilters();
+                fetchStaff();
+            }
+        });
     </script>
 
 </body>

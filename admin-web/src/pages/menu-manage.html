@@ -6,6 +6,7 @@
     <title>Quản lý menu - Admin</title>
     <script src="../services/auth-check.js"></script>
     <link rel="stylesheet" href="../assets/css/MenuManage.css">
+    <link rel="stylesheet" href="../assets/css/filter.css">
 </head>
 
 <body>
@@ -81,6 +82,9 @@
                         <button class="btn btn-primary" onclick="showAddForm()">+ Thêm món</button>
                     </div>
 
+                    <!-- Filter Container -->
+                    <div id="menu-filter-container"></div>
+
                     <table id="menu-table">
                         <thead>
                             <tr>
@@ -133,16 +137,68 @@
         </main>
     </div>
     <script src="../services/admin-api.js"></script>
+    <script src="../services/filter-service.js"></script>
     <script>
         let editingId = null;
         let categories = [];
-        function fetchMenu() {
-            adminApi.getMenu().then(data => {
-                const tbody = document.querySelector('#menu-table tbody');
-                tbody.innerHTML = '';
-                data.forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
+        let allMenuItems = [];
+        let filterManager = null;
+
+        // Initialize filter manager
+        function initFilters() {
+            filterManager = new FilterManager('menu-filter-container', {
+                onFilter: renderMenuTable
+            });
+
+            // Search by name
+            filterManager.addFilter(new TextFilterStrategy({
+                id: 'filter-search',
+                label: 'Tìm kiếm',
+                field: 'name',
+                placeholder: 'Nhập tên món...',
+                searchFields: ['name', 'description']
+            }));
+
+            // Filter by category
+            filterManager.addFilter(new SelectFilterStrategy({
+                id: 'filter-category',
+                label: 'Danh mục',
+                field: 'category_id',
+                allLabel: 'Tất cả danh mục',
+                options: [] // Will be populated dynamically
+            }));
+
+            // Filter by status
+            filterManager.addFilter(new SelectFilterStrategy({
+                id: 'filter-status',
+                label: 'Trạng thái',
+                field: 'is_available',
+                allLabel: 'Tất cả trạng thái',
+                options: [
+                    { value: '1', label: 'Sẵn sàng' },
+                    { value: '0', label: 'Hết món' }
+                ]
+            }));
+
+            filterManager.render();
+        }
+
+        // Render menu table from filtered data
+        function renderMenuTable(data) {
+            const tbody = document.querySelector('#menu-table tbody');
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="filter-no-results">
+                    <div class="icon">🔍</div>
+                    <p>Không tìm thấy món ăn nào</p>
+                </td></tr>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
                 <td>${item.id}</td>
                 <td><strong>${item.name}</strong></td>
                 <td>${item.category_name || ''}</td>
@@ -152,13 +208,31 @@
                     <button class="btn" style="padding: 6px 12px; background: var(--color-primary-50); color: var(--color-primary-700); margin-right: 8px;" onclick="editMenu(${item.id})">Sửa</button>
                     <button class="btn" style="padding: 6px 12px; background: #fee2e2; color: #ef4444;" onclick="deleteMenu(${item.id})">Xóa</button>
                 </td>`;
-                    tbody.appendChild(tr);
-                });
+                tbody.appendChild(tr);
             });
         }
+
+        function fetchMenu() {
+            adminApi.getMenu().then(data => {
+                allMenuItems = data;
+                filterManager.setData(allMenuItems);
+            });
+        }
+
         function fetchCategories() {
             return adminApi.getCategories().then(data => {
                 categories = data;
+                
+                // Update category filter options
+                const categoryFilter = filterManager.getFilter('filter-category');
+                if (categoryFilter) {
+                    categoryFilter.updateOptions(data.map(cat => ({
+                        value: cat.id.toString(),
+                        label: cat.name
+                    })));
+                }
+
+                // Update form dropdown
                 const sel = document.getElementById('category_id');
                 sel.innerHTML = '';
                 data.forEach(cat => {
@@ -169,6 +243,7 @@
                 });
             });
         }
+
         function showAddForm() {
             editingId = null;
             document.getElementById('form-title').innerText = 'Thêm món';
@@ -218,7 +293,14 @@
                 adminApi.deleteMenu(id).then(fetchMenu);
             }
         }
-        fetchMenu();
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof FilterManager !== 'undefined') {
+                initFilters();
+                fetchCategories().then(fetchMenu);
+            }
+        });
 
         // Auth & UI Helpers
         function toggleProfileDropdown() {

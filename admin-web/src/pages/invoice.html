@@ -6,6 +6,7 @@
     <title>Hóa đơn & Thanh toán - Admin</title>
     <script src="../services/auth-check.js"></script>
     <link rel="stylesheet" href="../assets/css/MenuManage.css">
+    <link rel="stylesheet" href="../assets/css/filter.css">
 </head>
 
 <body>
@@ -51,6 +52,9 @@
                         <button class="btn btn-primary" onclick="fetchInvoices()"> Làm mới</button>
                     </div>
 
+                    <!-- Filter Container -->
+                    <div id="invoice-filter-container"></div>
+
                     <table id="invoice-table">
                         <thead>
                             <tr>
@@ -73,15 +77,67 @@
         </main>
     </div>
     <script src="../services/admin-api.js"></script>
+    <script src="../services/filter-service.js"></script>
     <script>
-        function fetchInvoices() {
-            adminApi.getInvoices().then(data => {
-                const tbody = document.querySelector('#invoice-table tbody');
-                tbody.innerHTML = '';
-                data.forEach(inv => {
-                    const paymentMethod = inv.type_payment === 'CAST' ? 'Tiền mặt' : (inv.type_payment === 'BANK' ? 'Chuyển khoản' : inv.type_payment);
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
+        let allInvoices = [];
+        let filterManager = null;
+
+        // Initialize filter manager
+        function initFilters() {
+            filterManager = new FilterManager('invoice-filter-container', {
+                onFilter: renderInvoiceTable
+            });
+
+            // Search by customer name
+            filterManager.addFilter(new TextFilterStrategy({
+                id: 'filter-search',
+                label: 'Tìm kiếm',
+                field: 'customer_name',
+                placeholder: 'Nhập tên khách hàng...',
+                searchFields: ['customer_name', 'table_number']
+            }));
+
+            // Filter by date range
+            filterManager.addFilter(new DateFilterStrategy({
+                id: 'filter-date',
+                label: 'Ngày',
+                field: 'created_at',
+                fromLabel: 'Từ ngày',
+                toLabel: 'Đến ngày'
+            }));
+
+            // Filter by payment method
+            filterManager.addFilter(new SelectFilterStrategy({
+                id: 'filter-payment',
+                label: 'Phương thức thanh toán',
+                field: 'type_payment',
+                allLabel: 'Tất cả',
+                options: [
+                    { value: 'CAST', label: 'Tiền mặt' },
+                    { value: 'BANK', label: 'Chuyển khoản' }
+                ]
+            }));
+
+            filterManager.render();
+        }
+
+        // Render invoice table from filtered data
+        function renderInvoiceTable(data) {
+            const tbody = document.querySelector('#invoice-table tbody');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="filter-no-results">
+                    <div class="icon">🔍</div>
+                    <p>Không tìm thấy hóa đơn nào</p>
+                </td></tr>`;
+                return;
+            }
+
+            data.forEach(inv => {
+                const paymentMethod = inv.type_payment === 'CAST' ? 'Tiền mặt' : (inv.type_payment === 'BANK' ? 'Chuyển khoản' : inv.type_payment);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
                 <td>${inv.id}</td>
                 <td>${inv.table_number || ''}</td>
                 <td>${inv.customer_name || 'Khách vãng lai'}</td>
@@ -91,8 +147,14 @@
                 <td style="text-align: right;">
                     <button class="btn btn-secondary" onclick="viewInvoice(${inv.id})">Chi tiết</button>
                 </td>`;
-                    tbody.appendChild(tr);
-                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        function fetchInvoices() {
+            adminApi.getInvoices().then(data => {
+                allInvoices = data;
+                filterManager.setData(allInvoices);
             });
         }
         function viewInvoice(id) {
@@ -145,7 +207,19 @@
                 detailDiv.scrollIntoView({ behavior: 'smooth' });
             });
         }
-        fetchInvoices();
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing filters...');
+            console.log('Filter container exists:', !!document.getElementById('invoice-filter-container'));
+            console.log('FilterManager exists:', typeof FilterManager !== 'undefined');
+            
+            if (typeof FilterManager !== 'undefined') {
+                initFilters();
+                fetchInvoices();
+            } else {
+                console.error('FilterManager not loaded! Check filter-service.js path.');
+            }
+        });
 
         // Auth & UI Helpers
         function toggleProfileDropdown() {
